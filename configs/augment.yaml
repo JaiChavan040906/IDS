@@ -1,0 +1,24 @@
+# cWGAN-GP minority augmentation (train split only).
+seed: 42
+output_dir: artifacts/augment
+report_dir: reports/augment
+
+# Augment classes with min_real <= train count < target, up to `target` rows.
+# Classes below min_real (Heartbleed, Infiltration) are NOT augmented: a GAN
+# trained on 8-46 rows would only memorise them.
+min_real: 100
+target: 5000
+
+# Keep a synthetic row only if the reference classifier (RF seed 42) predicts
+# the class it was generated for. Draw up to `oversample` x the needed rows.
+filter_model: artifacts/models/random_forest/seed_42/model.joblib
+oversample: 4
+
+gan:
+  z_dim: 32
+  lr: 0.0001
+  batch_size: 256
+  n_critic: 5
+  gp_lambda: 10
+  iterations: 6000
+  log_every: 500

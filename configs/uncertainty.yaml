@@ -1,0 +1,24 @@
+# Stage 5 - calibration + uncertainty routing.
+seed: 42
+# Validation is split in two halves: "cal" fits temperature + thresholds,
+# "eval" measures how well they work (so we never grade on what we fitted).
+calibration_fraction: 0.5
+
+# Mahalanobis class centres are fitted on TRAIN embeddings (random subset, for RAM).
+mahalanobis_train_rows: 400000
+
+# Routing thresholds, chosen on the "cal" half:
+#  entropy  -> the most uncertain 1% of flows go to review
+#  distance -> flows further from every class than 99.5% of known traffic go to review
+entropy_referral_rate: 0.01
+distance_quantile: 0.995
+
+# Hybrid routing (chosen after leave-one-attack-out, see docs/PROJECT_REPORT.md):
+# a Random Forest second opinion. A flow also goes to review if the RF is among
+# its most uncertain 0.5% (cal half) or the RF and CNN-LSTM predict different classes.
+# Remove second_opinion_model to get the CNN-LSTM-only routing.
+second_opinion_model: artifacts/models/random_forest/seed_42/model.joblib
+rf_referral_rate: 0.005
+
+bundle_dir: artifacts/bundles
+report_dir: reports/uncertainty

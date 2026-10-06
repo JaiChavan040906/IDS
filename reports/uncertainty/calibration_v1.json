@@ -1,0 +1,98 @@
+{
+  "temperature": 1.012842109480679,
+  "calibration": {
+    "nll_before": 0.0025247440207749605,
+    "nll_after": 0.0025163290556520224,
+    "ece_before": 0.00023181412460462618,
+    "ece_after": 0.00021735139477856047
+  },
+  "thresholds": {
+    "entropy": 0.004784201578854306,
+    "distance": 1688.6894382338976,
+    "entropy_referral_rate": 0.01,
+    "distance_quantile": 0.995,
+    "rf_uncertainty": 0.020000000000000018,
+    "rf_referral_rate": 0.005
+  },
+  "hybrid": true,
+  "routing_eval_half": {
+    "referral_rate": 0.014431113979364129,
+    "error_overall": 0.0007231107759056379,
+    "error_on_auto_handled": 1.5778470277306616e-05,
+    "errors_caught_by_review": 0.978494623655914,
+    "missed_attacks_auto_benign": 2,
+    "false_alarms_auto_alert": 0,
+    "counts": {
+      "auto_alert": 20731,
+      "auto_benign": 106024,
+      "review": 1856
+    }
+  },
+  "routing_cnn_only": {
+    "referral_rate": 0.012984892427552854,
+    "error_overall": 0.0007231107759056379,
+    "error_on_auto_handled": 3.151070182210633e-05,
+    "errors_caught_by_review": 0.956989247311828,
+    "missed_attacks_auto_benign": 4,
+    "false_alarms_auto_alert": 0,
+    "counts": {
+      "auto_alert": 20761,
+      "auto_benign": 106180,
+      "review": 1670
+    }
+  },
+  "routing_entropy_only": {
+    "referral_rate": 0.010349037018606495,
+    "error_overall": 0.0007231107759056379,
+    "error_on_auto_handled": 3.1426775612822124e-05,
+    "errors_caught_by_review": 0.956989247311828,
+    "missed_attacks_auto_benign": 4,
+    "false_alarms_auto_alert": 0,
+    "counts": {
+      "auto_alert": 20915,
+      "auto_benign": 106365,
+      "review": 1331
+    }
+  },
+  "review_rate_by_true_class": {
+    "BENIGN": 0.006894096929504112,
+    "DoS Hulk": 0.008551307847082495,
+    "DDoS": 0.0051849775784753365,
+    "Portscan": 0.36741767764298094,
+    "DoS GoldenEye": 0.13414634146341464,
+    "DoS Slowloris": 0.3808411214953271,
+    "DoS Slowhttptest": 0.7049608355091384,
+    "FTP-Patator": 0.010033444816053512,
+    "SSH-Patator": 0.026785714285714284,
+    "Web Attack": 0.9935064935064936,
+    "Botnet": 0.6458333333333334,
+    "Infiltration": 0.8,
+    "Heartbleed": 0.0
+  },
+  "coverage_risk": {
+    "CNN-LSTM entropy (calibrated)": {
+      "risk_at_0pct_referral": 0.0007231107759056379,
+      "risk_at_1pct_referral": 3.141714905080938e-05,
+      "risk_at_2pct_referral": 2.380461174678241e-05,
+      "risk_at_5pct_referral": 1.6373445546013475e-05
+    },
+    "CNN-LSTM 1 - max prob (raw)": {
+      "risk_at_0pct_referral": 0.0007231107759056379,
+      "risk_at_1pct_referral": 3.141714905080938e-05,
+      "risk_at_2pct_referral": 1.5869741164521605e-05,
+      "risk_at_5pct_referral": 1.6373445546013475e-05
+    },
+    "random_forest 1 - max prob": {
+      "risk_at_0pct_referral": 0.00031101538748629586,
+      "risk_at_1pct_referral": 1.570857452540469e-05,
+      "risk_at_2pct_referral": 7.934870582260803e-06,
+      "risk_at_5pct_referral": 8.186722773006738e-06
+    },
+    "lightgbm 1 - max prob": {
+      "risk_at_0pct_referral": 0.00046652308122944384,
+      "risk_at_1pct_referral": 7.854287262702345e-06,
+      "risk_at_2pct_referral": 0.0,
+      "risk_at_5pct_referral": 0.0
+    }
+  }
+}

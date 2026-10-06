@@ -1,0 +1,133 @@
+{
+  "train_days": [
+    "monday",
+    "tuesday",
+    "wednesday"
+  ],
+  "test_days": [
+    "thursday",
+    "friday"
+  ],
+  "ours": {
+    "attack_caught_or_referred": 0.9171143008101444,
+    "attack_missed": 0.08288569918985558,
+    "benign_auto_closed": 0.9953271236593932,
+    "benign_false_alert": 0.0,
+    "benign_referred": 0.004672876340606715,
+    "overall_referral": 0.1492506020787953
+  },
+  "ours_entropy_only": {
+    "attack_caught_or_referred": 0.7744804508629799,
+    "attack_missed": 0.22551954913702008,
+    "benign_auto_closed": 0.9979179591089847,
+    "benign_false_alert": 2.231555081474076e-06,
+    "benign_referred": 0.0020798093359338386,
+    "overall_referral": 0.11510188026702983
+  },
+  "rf": {
+    "attack_caught_or_referred": 0.9855472877773864,
+    "attack_missed": 0.014452712222613597,
+    "benign_auto_closed": 0.9950258637233943,
+    "benign_false_alert": 1.115777540737038e-05,
+    "benign_referred": 0.004962978501198345,
+    "overall_referral": 0.1702500714330774
+  },
+  "per_class": {
+    "BENIGN": {
+      "n": 448118,
+      "seen_in_training": true,
+      "ours": {
+        "n": 448118,
+        "review": 0.004672876340606715,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.9953271236593932
+      },
+      "rf": {
+        "n": 448118,
+        "review": 0.004962978501198345,
+        "auto_alert": 1.115777540737038e-05,
+        "auto_benign_missed": 0.9950258637233943
+      }
+    },
+    "DDoS": {
+      "n": 80873,
+      "seen_in_training": false,
+      "ours": {
+        "n": 80873,
+        "review": 0.9370989081646532,
+        "auto_alert": 0.06115761749904171,
+        "auto_benign_missed": 0.0017434743363050709
+      },
+      "rf": {
+        "n": 80873,
+        "review": 1.0,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.0
+      }
+    },
+    "Portscan": {
+      "n": 6540,
+      "seen_in_training": false,
+      "ours": {
+        "n": 6540,
+        "review": 0.10076452599388379,
+        "auto_alert": 0.00382262996941896,
+        "auto_benign_missed": 0.8954128440366973
+      },
+      "rf": {
+        "n": 6540,
+        "review": 0.931651376146789,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.06834862385321101
+      }
+    },
+    "Web Attack": {
+      "n": 1748,
+      "seen_in_training": false,
+      "ours": {
+        "n": 1748,
+        "review": 0.9227688787185355,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.07723112128146453
+      },
+      "rf": {
+        "n": 1748,
+        "review": 0.9387871853546911,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.06121281464530892
+      }
+    },
+    "Botnet": {
+      "n": 1631,
+      "seen_in_training": false,
+      "ours": {
+        "n": 1631,
+        "review": 0.1600245248313918,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.8399754751686083
+      },
+      "rf": {
+        "n": 1631,
+        "review": 0.5377069282648682,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.46229307173513184
+      }
+    },
+    "Infiltration": {
+      "n": 56,
+      "seen_in_training": false,
+      "ours": {
+        "n": 56,
+        "review": 0.5,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.5
+      },
+      "rf": {
+        "n": 56,
+        "review": 0.9107142857142857,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.08928571428571429
+      }
+    }
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "DDoS": {
+    "n_unseen": 80873,
+    "ours": {
+      "n": 80873,
+      "review": 0.8791191126828484,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.12088088731715159
+    },
+    "ours_entropy_only": {
+      "n": 80873,
+      "review": 0.8776723999357017,
+      "auto_alert": 2.473013242985916e-05,
+      "auto_benign_missed": 0.12230286993186848
+    },
+    "rf": {
+      "n": 80873,
+      "review": 1.0,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.0
+    },
+    "ours_predicted_as": {
+      "BENIGN": 0.5455,
+      "DoS GoldenEye": 0.1455,
+      "DoS Slowhttptest": 0.111,
+      "DoS Slowloris": 0.0686
+    },
+    "in_distribution_referral": {
+      "ours": 0.012364684091376827,
+      "rf": 0.006256431364478288
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.9987816423132332,
+      "rf": 0.9996871784317761
+    }
+  },
+  "Portscan": {
+    "n_unseen": 6540,
+    "ours": {
+      "n": 6540,
+      "review": 0.19097859327217126,
+      "auto_alert": 0.004281345565749235,
+      "auto_benign_missed": 0.8047400611620795
+    },
+    "ours_entropy_only": {
+      "n": 6540,
+      "review": 0.11880733944954129,
+      "auto_alert": 0.008868501529051987,
+      "auto_benign_missed": 0.8723241590214067
+    },
+    "rf": {
+      "n": 6540,
+      "review": 0.9467889908256881,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.05321100917431193
+    },
+    "ours_predicted_as": {
+      "BENIGN": 0.9648,
+      "Botnet": 0.0121,
+      "DDoS": 0.0116,
+      "Infiltration": 0.0064
+    },
+    "in_distribution_referral": {
+      "ours": 0.013160566724463814,
+      "rf": 0.005061155630535639
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.999304872143337,
+      "rf": 0.9997110142618367
+    }
+  },
+  "Botnet": {
+    "n_unseen": 1631,
+    "ours": {
+      "n": 1631,
+      "review": 0.6707541385652973,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.32924586143470264
+    },
+    "ours_entropy_only": {
+      "n": 1631,
+      "review": 0.6707541385652973,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.32924586143470264
+    },
+    "rf": {
+      "n": 1631,
+      "review": 0.8920907418761496,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.1079092581238504
+    },
+    "ours_predicted_as": {
+      "Portscan": 0.5205,
+      "BENIGN": 0.4795
+    },
+    "in_distribution_referral": {
+      "ours": 0.012150980407419805,
+      "rf": 0.005230915332342158
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.9992215899803062,
+      "rf": 0.9997742610942888
+    }
+  },
+  "Web Attack": {
+    "n_unseen": 1748,
+    "ours": {
+      "n": 1748,
+      "review": 0.8689931350114416,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.13100686498855835
+    },
+    "ours_entropy_only": {
+      "n": 1748,
+      "review": 0.8689931350114416,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.13100686498855835
+    },
+    "rf": {
+      "n": 1748,
+      "review": 0.9359267734553776,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.06407322654462243
+    },
+    "ours_predicted_as": {
+      "BENIGN": 1.0
+    },
+    "in_distribution_referral": {
+      "ours": 0.013023813416162607,
+      "rf": 0.005433724904053496
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.9988945717243902,
+      "rf": 0.9997275352841807
+    }
+  },
+  "SSH-Patator": {
+    "n_unseen": 2540,
+    "ours": {
+      "n": 2540,
+      "review": 0.003937007874015748,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.9960629921259843
+    },
+    "ours_entropy_only": {
+      "n": 2540,
+      "review": 0.003937007874015748,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.9960629921259843
+    },
+    "rf": {
+      "n": 2540,
+      "review": 0.017716535433070866,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.9822834645669292
+    },
+    "ours_predicted_as": {
+      "BENIGN": 0.9969,
+      "DoS Hulk": 0.0031
+    },
+    "in_distribution_referral": {
+      "ours": 0.011574380583703957,
+      "rf": 0.0054522654162804645
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.9991120596322057,
+      "rf": 0.9996806530256178
+    }
+  },
+  "DoS Slowloris": {
+    "n_unseen": 4847,
+    "ours": {
+      "n": 4847,
+      "review": 0.8857024963895193,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.11429750361048072
+    },
+    "ours_entropy_only": {
+      "n": 4847,
+      "review": 0.8852898700226944,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.11471012997730555
+    },
+    "rf": {
+      "n": 4847,
+      "review": 0.8724984526511244,
+      "auto_alert": 0.10336290488962245,
+      "auto_benign_missed": 0.024138642459253148
+    },
+    "ours_predicted_as": {
+      "BENIGN": 0.411,
+      "DoS Slowhttptest": 0.3712,
+      "Portscan": 0.2168,
+      "Web Attack": 0.0006
+    },
+    "in_distribution_referral": {
+      "ours": 0.012497757112877683,
+      "rf": 0.005609168142421382
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.9984085253114687,
+      "rf": 0.9997113501790409
+    }
+  }
+}

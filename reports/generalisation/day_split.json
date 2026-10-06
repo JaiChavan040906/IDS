@@ -1,0 +1,177 @@
+{
+  "train_days": [
+    "monday",
+    "tuesday",
+    "wednesday"
+  ],
+  "test_days": [
+    "thursday",
+    "friday"
+  ],
+  "hybrid": {
+    "attack_caught_or_referred": 0.9862077315956322,
+    "attack_missed": 0.013792268404367735,
+    "benign_auto_closed": 0.9923524607357883,
+    "benign_false_alert": 0.0,
+    "benign_referred": 0.007647539264211659,
+    "overall_referral": 0.1725934474530861
+  },
+  "ours": {
+    "attack_caught_or_referred": 0.8354394152870729,
+    "attack_missed": 0.1645605847129271,
+    "benign_auto_closed": 0.9951575254732012,
+    "benign_false_alert": 8.926220325896303e-06,
+    "benign_referred": 0.004833548306472849,
+    "overall_referral": 0.1401238668116356
+  },
+  "ours_entropy_only": {
+    "attack_caught_or_referred": 0.6472239344839732,
+    "attack_missed": 0.35277606551602675,
+    "benign_auto_closed": 0.9978398546811331,
+    "benign_false_alert": 8.926220325896303e-06,
+    "benign_referred": 0.0021512190985410093,
+    "overall_referral": 0.1026706693928745
+  },
+  "rf": {
+    "attack_caught_or_referred": 0.9855472877773864,
+    "attack_missed": 0.014452712222613597,
+    "benign_auto_closed": 0.9950258637233943,
+    "benign_false_alert": 1.115777540737038e-05,
+    "benign_referred": 0.004962978501198345,
+    "overall_referral": 0.1702500714330774
+  },
+  "per_class": {
+    "BENIGN": {
+      "n": 448118,
+      "seen_in_training": true,
+      "hybrid": {
+        "n": 448118,
+        "review": 0.007647539264211659,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.9923524607357883
+      },
+      "ours": {
+        "n": 448118,
+        "review": 0.004833548306472849,
+        "auto_alert": 8.926220325896303e-06,
+        "auto_benign_missed": 0.9951575254732012
+      },
+      "rf": {
+        "n": 448118,
+        "review": 0.004962978501198345,
+        "auto_alert": 1.115777540737038e-05,
+        "auto_benign_missed": 0.9950258637233943
+      }
+    },
+    "DDoS": {
+      "n": 80873,
+      "seen_in_training": false,
+      "hybrid": {
+        "n": 80873,
+        "review": 1.0,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.0
+      },
+      "ours": {
+        "n": 80873,
+        "review": 0.896912442966132,
+        "auto_alert": 0.031098141530547897,
+        "auto_benign_missed": 0.07198941550332003
+      },
+      "rf": {
+        "n": 80873,
+        "review": 1.0,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.0
+      }
+    },
+    "Portscan": {
+      "n": 6540,
+      "seen_in_training": false,
+      "hybrid": {
+        "n": 6540,
+        "review": 0.9230886850152905,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.07691131498470948
+      },
+      "ours": {
+        "n": 6540,
+        "review": 0.0981651376146789,
+        "auto_alert": 0.004128440366972477,
+        "auto_benign_missed": 0.8977064220183486
+      },
+      "rf": {
+        "n": 6540,
+        "review": 0.931651376146789,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.06834862385321101
+      }
+    },
+    "Web Attack": {
+      "n": 1748,
+      "seen_in_training": false,
+      "hybrid": {
+        "n": 1748,
+        "review": 0.9244851258581236,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.07551487414187644
+      },
+      "ours": {
+        "n": 1748,
+        "review": 0.002288329519450801,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.9977116704805492
+      },
+      "rf": {
+        "n": 1748,
+        "review": 0.9387871853546911,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.06121281464530892
+      }
+    },
+    "Botnet": {
+      "n": 1631,
+      "seen_in_training": false,
+      "hybrid": {
+        "n": 1631,
+        "review": 0.6229307173513182,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.3770692826486818
+      },
+      "ours": {
+        "n": 1631,
+        "review": 0.08645003065603923,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.9135499693439607
+      },
+      "rf": {
+        "n": 1631,
+        "review": 0.5377069282648682,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.46229307173513184
+      }
+    },
+    "Infiltration": {
+      "n": 56,
+      "seen_in_training": false,
+      "hybrid": {
+        "n": 56,
+        "review": 0.9464285714285714,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.05357142857142857
+      },
+      "ours": {
+        "n": 56,
+        "review": 0.5892857142857143,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.4107142857142857
+      },
+      "rf": {
+        "n": 56,
+        "review": 0.9107142857142857,
+        "auto_alert": 0.0,
+        "auto_benign_missed": 0.08928571428571429
+      }
+    }
+  }
+}

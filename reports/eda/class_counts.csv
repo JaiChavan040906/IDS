@@ -1,0 +1,28 @@
+label,count,percent
+BENIGN,1582566,75.3611
+Portscan,159066,7.5747
+DoS Hulk,158468,7.5462
+DDoS,95144,4.5307
+Infiltration - Portscan,71767,3.4175
+DoS GoldenEye,7567,0.3603
+Botnet - Attempted,4067,0.1937
+FTP-Patator,3972,0.1891
+DoS Slowloris,3859,0.1838
+DoS Slowhttptest - Attempted,3368,0.1604
+SSH-Patator,2961,0.141
+DoS Slowloris - Attempted,1847,0.088
+DoS Slowhttptest,1740,0.0829
+Web Attack - Brute Force - Attempted,1292,0.0615
+Botnet,736,0.035
+Web Attack - XSS - Attempted,655,0.0312
+DoS Hulk - Attempted,581,0.0277
+DoS GoldenEye - Attempted,80,0.0038
+Web Attack - Brute Force,73,0.0035
+Infiltration - Attempted,45,0.0021
+Infiltration,36,0.0017
+SSH-Patator - Attempted,27,0.0013
+Web Attack - XSS,18,0.0009
+Web Attack - SQL Injection,13,0.0006
+FTP-Patator - Attempted,12,0.0006
+Heartbleed,11,0.0005
+Web Attack - SQL Injection - Attempted,5,0.0002

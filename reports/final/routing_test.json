@@ -1,0 +1,52 @@
+{
+  "bundle": "v1",
+  "hybrid": true,
+  "referral_rate": 0.014796557059660527,
+  "accuracy_all": 0.9993196538398738,
+  "accuracy_on_auto_handled": 0.9999921078384948,
+  "errors_caught_by_review": 0.9885714285714285,
+  "attacks_missed_auto_benign": 2,
+  "attack_miss_rate": 4.576030750926646e-05,
+  "benign_false_alerts": 0,
+  "benign_false_alert_rate": 0.0,
+  "review_rate_by_true_class": {
+    "BENIGN": 0.007039285112122745,
+    "DoS Hulk": 0.007670383100008383,
+    "DDoS": 0.0075677948286735335,
+    "Portscan": 0.38095238095238093,
+    "DoS GoldenEye": 0.12205754141238012,
+    "DoS Slowloris": 0.397196261682243,
+    "DoS Slowhttptest": 0.7454308093994778,
+    "FTP-Patator": 0.006688963210702341,
+    "SSH-Patator": 0.044642857142857144,
+    "Web Attack": 0.9967532467532467,
+    "Botnet": 0.625,
+    "Infiltration": 1.0,
+    "Heartbleed": 0.0
+  },
+  "cnn_only": {
+    "referral_rate": 0.013334784738474936,
+    "accuracy_all": 0.9993196538398738,
+    "accuracy_on_auto_handled": 0.9999724183583407,
+    "errors_caught_by_review": 0.96,
+    "attacks_missed_auto_benign": 7,
+    "attack_miss_rate": 0.00016016107628243263,
+    "benign_false_alerts": 0,
+    "benign_false_alert_rate": 0.0,
+    "review_rate_by_true_class": {
+      "BENIGN": 0.005671706101650462,
+      "DoS Hulk": 0.006245284600553273,
+      "DDoS": 0.007147361782636115,
+      "Portscan": 0.37402597402597404,
+      "DoS GoldenEye": 0.1054925893635571,
+      "DoS Slowloris": 0.39369158878504673,
+      "DoS Slowhttptest": 0.7454308093994778,
+      "FTP-Patator": 0.0033444816053511705,
+      "SSH-Patator": 0.026785714285714284,
+      "Web Attack": 0.9902597402597403,
+      "Botnet": 0.6180555555555556,
+      "Infiltration": 1.0,
+      "Heartbleed": 0.0
+    }
+  }
+}

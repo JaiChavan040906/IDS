@@ -1,0 +1,38 @@
+train (1200368, 64), val (257222, 64), 13 classes
+
+== random_forest seed 7 ==
+  185s | acc 0.9997 macroF1 0.9853 | binary F1 0.9992 DR 0.9991 FPR 0.00014 | {}
+
+== random_forest seed 2025 ==
+  153s | acc 0.9997 macroF1 0.9855 | binary F1 0.9992 DR 0.9991 FPR 0.00015 | {}
+
+# Baselines - validation set (mean ± std over seeds, %)
+
+| metric | random_forest |
+|---|---|
+| accuracy | 99.97 ± 0.00 |
+| macro_f1 | 98.54 ± 0.01 |
+| macro_f1_reliable | 99.28 ± 0.02 |
+| bin_precision | 99.93 ± 0.00 |
+| detection_rate | 99.91 ± 0.00 |
+| bin_f1 | 99.92 ± 0.00 |
+| fpr | 0.015 ± 0.001 |
+| fnr | 0.088 ± 0.005 |
+
+## Per-class recall (%)
+
+| class | random_forest |
+|---|---|
+| BENIGN | 99.99 ± 0.00 |
+| DoS Hulk | 99.99 ± 0.00 |
+| DDoS | 100.00 ± 0.00 |
+| Portscan | 99.80 ± 0.05 |
+| DoS GoldenEye | 99.74 ± 0.00 |
+| DoS Slowloris | 99.77 ± 0.20 |
+| DoS Slowhttptest | 98.69 ± 0.00 |
+| FTP-Patator | 100.00 ± 0.00 |
+| SSH-Patator | 99.55 ± 0.00 |
+| Web Attack | 97.95 ± 0.19 |
+| Botnet | 95.14 ± 0.00 |
+| Infiltration | 80.00 ± 0.00 |
+| Heartbleed | 100.00 ± 0.00 |

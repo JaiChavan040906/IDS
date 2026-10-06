@@ -1,0 +1,93 @@
++ 12,866 synthetic training rows from artifacts/augment/synthetic.npz
+device cuda | train (1213234, 64) | val (257222, 64)
+
+== cnn_lstm_aug seed 42 ==
+  oversampled 1,946 rows of classes with < 1000 rows
+  epoch  1 loss 0.16115 val macroF1 0.8148 (worst class 11: 0.000) (49s)
+  epoch  2 loss 0.02183 val macroF1 0.8937 (worst class 11: 0.235) (55s)
+  epoch  3 loss 0.01345 val macroF1 0.9236 (worst class 11: 0.562) (60s)
+  epoch  4 loss 0.00948 val macroF1 0.9173 (worst class 11: 0.581) (58s)
+  epoch  5 loss 0.00717 val macroF1 0.9432 (worst class 11: 0.593) (57s)
+  epoch  6 loss 0.00592 val macroF1 0.9081 (worst class 11: 0.419) (60s)
+  epoch  7 loss 0.00565 val macroF1 0.9459 (worst class 11: 0.581) (58s)
+  epoch  8 loss 0.00455 val macroF1 0.9564 (worst class 11: 0.667) (56s)
+  epoch  9 loss 0.00415 val macroF1 0.9538 (worst class 11: 0.621) (55s)
+  epoch 10 loss 0.00364 val macroF1 0.9660 (worst class 11: 0.727) (57s)
+  epoch 11 loss 0.00309 val macroF1 0.9767 (worst class 11: 0.857) (59s)
+  epoch 12 loss 0.00294 val macroF1 0.9685 (worst class 11: 0.750) (57s)
+  epoch 13 loss 0.00275 val macroF1 0.9806 (worst class 11: 0.900) (151s)
+  epoch 14 loss 0.00249 val macroF1 0.9586 (worst class 11: 0.615) (86s)
+  epoch 15 loss 0.00234 val macroF1 0.9754 (worst class 11: 0.818) (66s)
+  epoch 16 loss 0.00221 val macroF1 0.9725 (worst class 11: 0.783) (68s)
+  epoch 17 loss 0.00213 val macroF1 0.9750 (worst class 11: 0.818) (73s)
+  1135s | acc 0.9992 macroF1 0.9806 | binary F1 0.9981 DR 0.9985 FPR 0.00046
+
+== cnn_lstm_aug seed 7 ==
+  oversampled 1,946 rows of classes with < 1000 rows
+  epoch  1 loss 0.16677 val macroF1 0.7959 (worst class 11: 0.000) (81s)
+  epoch  2 loss 0.02285 val macroF1 0.8969 (worst class 12: 0.571) (76s)
+  epoch  3 loss 0.01339 val macroF1 0.8893 (worst class 12: 0.444) (72s)
+  epoch  4 loss 0.00931 val macroF1 0.8967 (worst class 11: 0.175) (77s)
+  epoch  5 loss 0.00748 val macroF1 0.9533 (worst class 11: 0.692) (67s)
+  epoch  6 loss 0.00663 val macroF1 0.9572 (worst class 11: 0.643) (69s)
+  epoch  7 loss 0.00491 val macroF1 0.9553 (worst class 11: 0.621) (63s)
+  epoch  8 loss 0.00450 val macroF1 0.9484 (worst class 11: 0.600) (64s)
+  epoch  9 loss 0.00404 val macroF1 0.9555 (worst class 11: 0.621) (61s)
+  epoch 10 loss 0.00360 val macroF1 0.9236 (worst class 11: 0.400) (60s)
+  695s | acc 0.9990 macroF1 0.9572 | binary F1 0.9977 DR 0.9978 FPR 0.00052
+
+== cnn_lstm_aug seed 2025 ==
+  oversampled 1,946 rows of classes with < 1000 rows
+  epoch  1 loss 0.17730 val macroF1 0.8159 (worst class 11: 0.000) (60s)
+  epoch  2 loss 0.02378 val macroF1 0.8469 (worst class 11: 0.000) (75s)
+  epoch  3 loss 0.01488 val macroF1 0.9033 (worst class 11: 0.538) (76s)
+  epoch  4 loss 0.01134 val macroF1 0.9293 (worst class 11: 0.483) (64s)
+  epoch  5 loss 0.00857 val macroF1 0.9463 (worst class 11: 0.643) (64s)
+  epoch  6 loss 0.00705 val macroF1 0.9097 (worst class 11: 0.514) (62s)
+  epoch  7 loss 0.00598 val macroF1 0.9482 (worst class 11: 0.562) (57s)
+  epoch  8 loss 0.00499 val macroF1 0.9452 (worst class 11: 0.696) (56s)
+  epoch  9 loss 0.00461 val macroF1 0.9501 (worst class 11: 0.562) (57s)
+  epoch 10 loss 0.00396 val macroF1 0.9376 (worst class 11: 0.391) (54s)
+  epoch 11 loss 0.00353 val macroF1 0.9600 (worst class 11: 0.643) (55s)
+  epoch 12 loss 0.00315 val macroF1 0.9490 (worst class 11: 0.500) (60s)
+  epoch 13 loss 0.00295 val macroF1 0.9579 (worst class 11: 0.600) (67s)
+  epoch 14 loss 0.00272 val macroF1 0.9650 (worst class 11: 0.692) (55s)
+  epoch 15 loss 0.00261 val macroF1 0.9698 (worst class 11: 0.750) (104s)
+  epoch 16 loss 0.00242 val macroF1 0.9750 (worst class 11: 0.818) (59s)
+  epoch 17 loss 0.00231 val macroF1 0.9785 (worst class 11: 0.857) (53s)
+  epoch 18 loss 0.00221 val macroF1 0.9816 (worst class 11: 0.900) (61s)
+  epoch 19 loss 0.00217 val macroF1 0.9819 (worst class 11: 0.900) (60s)
+  epoch 20 loss 0.00217 val macroF1 0.9819 (worst class 11: 0.900) (48s)
+  1248s | acc 0.9994 macroF1 0.9819 | binary F1 0.9983 DR 0.9988 FPR 0.00044
+# Stage 4 - CNN-LSTM vs baselines, validation set (mean ± std over seeds, %)
+
+Seeds per model: random_forest=3, lightgbm=3, cnn_lstm=3, cnn_lstm_aug=3
+
+| metric | random_forest | lightgbm | cnn_lstm | cnn_lstm_aug |
+|---|---|---|---|---|
+| accuracy | 99.97 ± 0.00 | 99.96 ± 0.00 | 99.90 ± 0.06 | 99.92 ± 0.02 |
+| macro_f1 | 98.54 ± 0.01 | 98.80 ± 0.01 | 97.46 ± 0.69 | 97.32 ± 1.39 |
+| macro_f1_reliable | 99.28 ± 0.02 | 99.06 ± 0.01 | 98.21 ± 0.93 | 98.53 ± 0.30 |
+| bin_precision | 99.93 ± 0.00 | 99.87 ± 0.01 | 99.75 ± 0.07 | 99.77 ± 0.02 |
+| detection_rate | 99.91 ± 0.00 | 99.91 ± 0.01 | 99.75 ± 0.19 | 99.84 ± 0.05 |
+| bin_f1 | 99.92 ± 0.00 | 99.89 ± 0.00 | 99.75 ± 0.13 | 99.80 ± 0.03 |
+| fpr | 0.015 ± 0.001 | 0.026 ± 0.002 | 0.052 ± 0.015 | 0.047 ± 0.004 |
+| fnr | 0.088 ± 0.005 | 0.085 ± 0.005 | 0.249 ± 0.193 | 0.162 ± 0.049 |
+
+## Per-class recall (%)
+
+| class | random_forest | lightgbm | cnn_lstm | cnn_lstm_aug |
+|---|---|---|---|---|
+| BENIGN | 99.99 ± 0.00 | 99.97 ± 0.00 | 99.95 ± 0.01 | 99.95 ± 0.00 |
+| DoS Hulk | 99.99 ± 0.00 | 99.99 ± 0.00 | 99.90 ± 0.12 | 99.94 ± 0.03 |
+| DDoS | 100.00 ± 0.00 | 100.00 ± 0.00 | 100.00 ± 0.01 | 100.00 ± 0.01 |
+| Portscan | 99.80 ± 0.05 | 99.83 ± 0.00 | 96.19 ± 4.05 | 97.83 ± 1.31 |
+| DoS GoldenEye | 99.74 ± 0.00 | 99.91 ± 0.00 | 98.52 ± 1.09 | 99.39 ± 0.40 |
+| DoS Slowloris | 99.77 ± 0.20 | 99.88 ± 0.00 | 98.75 ± 1.45 | 99.22 ± 0.55 |
+| DoS Slowhttptest | 98.69 ± 0.00 | 99.17 ± 0.30 | 99.22 ± 0.23 | 99.17 ± 0.20 |
+| FTP-Patator | 100.00 ± 0.00 | 100.00 ± 0.00 | 99.55 ± 0.35 | 99.61 ± 0.39 |
+| SSH-Patator | 99.55 ± 0.00 | 99.55 ± 0.00 | 99.26 ± 0.52 | 98.88 ± 0.77 |
+| Web Attack | 97.95 ± 0.19 | 99.03 ± 0.00 | 97.73 ± 2.24 | 98.92 ± 0.19 |
+| Botnet | 95.14 ± 0.00 | 90.62 ± 0.00 | 89.47 ± 2.00 | 89.93 ± 1.20 |
+| Infiltration | 80.00 ± 0.00 | 90.00 ± 0.00 | 86.67 ± 5.77 | 90.00 ± 0.00 |
+| Heartbleed | 100.00 ± 0.00 | 100.00 ± 0.00 | 100.00 ± 0.00 | 100.00 ± 0.00 |

@@ -1,0 +1,28 @@
+# Stage 3 - baseline models. Evaluated on VALIDATION only (test stays locked).
+seeds: [42, 7, 2025]
+output_dir: artifacts/models
+report_dir: reports/baselines
+
+models:
+  random_forest:
+    n_estimators: 100
+    max_features: sqrt
+    min_samples_leaf: 1
+    n_jobs: -1
+
+  # Tuned on validation (reports/baselines/lgbm_tuning.md)
+  lightgbm:
+    objective: multiclass
+    n_estimators: 1000        # upper bound; early stopping on validation picks the real number
+    learning_rate: 0.1
+    num_leaves: 63
+    min_child_samples: 20
+    min_child_weight: 0.01
+    reg_lambda: 1.0
+    max_delta_step: 2.0       # caps leaf values; without it training diverged after 12 rounds
+    subsample: 0.8
+    subsample_freq: 1
+    colsample_bytree: 0.8
+    n_jobs: -1
+    verbose: -1
+lightgbm_early_stopping_rounds: 30

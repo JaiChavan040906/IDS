@@ -1,0 +1,31 @@
+Augmenting: {'DoS Slowloris': '3992 -> 5000', 'DoS Slowhttptest': '3576 -> 5000', 'FTP-Patator': '2789 -> 5000', 'SSH-Patator': '2092 -> 5000', 'Web Attack': '1439 -> 5000', 'Botnet': '1343 -> 5000'}
+  iter   500  critic -4.5106  gen +2.7017
+  iter  1000  critic -3.9606  gen +7.6299
+  iter  1500  critic -3.1002  gen +12.5872
+  iter  2000  critic -2.6050  gen +16.2439
+  iter  2500  critic -2.5294  gen +18.6496
+  iter  3000  critic -3.9869  gen +19.0239
+  iter  3500  critic -2.7255  gen +20.1187
+  iter  4000  critic -4.0715  gen +20.8068
+  iter  4500  critic -1.6396  gen +20.9379
+  iter  5000  critic -1.7682  gen +21.1676
+  iter  5500  critic -2.0787  gen +20.2113
+  iter  6000  critic -1.8685  gen +20.7906
+  DoS Slowloris      {'real_train_rows': 3992, 'requested': 1008, 'filter_acceptance': 0.0851, 'kept': 343, 'real_vs_fake_auc_unfiltered': 1.0, 'real_vs_fake_auc_kept': 1.0, 'mean_abs_feature_mean_gap_std_units': 0.8712}
+  DoS Slowhttptest   {'real_train_rows': 3576, 'requested': 1424, 'filter_acceptance': 0.0569, 'kept': 324, 'real_vs_fake_auc_unfiltered': 1.0, 'real_vs_fake_auc_kept': 1.0, 'mean_abs_feature_mean_gap_std_units': 0.8077}
+  FTP-Patator        {'real_train_rows': 2789, 'requested': 2211, 'filter_acceptance': 0.9853, 'kept': 2211, 'real_vs_fake_auc_unfiltered': 1.0, 'real_vs_fake_auc_kept': 1.0, 'mean_abs_feature_mean_gap_std_units': 0.0126}
+  SSH-Patator        {'real_train_rows': 2092, 'requested': 2908, 'filter_acceptance': 0.8614, 'kept': 2908, 'real_vs_fake_auc_unfiltered': 1.0, 'real_vs_fake_auc_kept': 1.0, 'mean_abs_feature_mean_gap_std_units': 0.0248}
+  Web Attack         {'real_train_rows': 1439, 'requested': 3561, 'filter_acceptance': 0.2403, 'kept': 3423, 'real_vs_fake_auc_unfiltered': 1.0, 'real_vs_fake_auc_kept': 1.0, 'mean_abs_feature_mean_gap_std_units': 0.1091}
+  Botnet             {'real_train_rows': 1343, 'requested': 3657, 'filter_acceptance': 0.5139, 'kept': 3657, 'real_vs_fake_auc_unfiltered': 1.0, 'real_vs_fake_auc_kept': 1.0, 'mean_abs_feature_mean_gap_std_units': 0.4434}
+# cWGAN-GP augmentation
+
+| class | real | added | filter acceptance | real-vs-fake AUC (kept) |
+|---|---|---|---|---|
+| DoS Slowloris | 3992 | 343 | 8.5% | 1.0 |
+| DoS Slowhttptest | 3576 | 324 | 5.7% | 1.0 |
+| FTP-Patator | 2789 | 2211 | 98.5% | 1.0 |
+| SSH-Patator | 2092 | 2908 | 86.1% | 1.0 |
+| Web Attack | 1439 | 3423 | 24.0% | 1.0 |
+| Botnet | 1343 | 3657 | 51.4% | 1.0 |
+
+AUC 0.5 = synthetic indistinguishable from real; 1.0 = trivially fake.

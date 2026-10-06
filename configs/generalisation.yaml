@@ -1,0 +1,24 @@
+# Evaluation plan steps 5 and 6 - how the system handles traffic it was never trained on.
+# Uses train + validation rows only. The test split stays untouched.
+seed: 42
+report_dir: reports/generalisation
+
+# Shorter training than Stage 4 (one seed per held-out attack) to keep runtime reasonable.
+train:
+  batch_size: 1024
+  lr: 0.001
+  weight_decay: 0.0001
+  dropout: 0.3
+  max_epochs: 8
+  patience: 2
+  min_class_rows: 1000
+
+rf: {n_estimators: 100, max_features: sqrt, n_jobs: -1}
+
+# Step 5: leave-one-attack-out
+held_out_attacks: [DDoS, Portscan, Botnet, Web Attack, SSH-Patator, DoS Slowloris]
+
+# Step 6: day-based split (train on earlier days, test on later days)
+day_split:
+  train_days: [monday, tuesday, wednesday]
+  test_days: [thursday, friday]

@@ -1,0 +1,246 @@
+{
+  "DDoS": {
+    "n_unseen": 80873,
+    "hybrid": {
+      "n": 80873,
+      "review": 1.0,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.0
+    },
+    "ours": {
+      "n": 80873,
+      "review": 0.9997897938743462,
+      "auto_alert": 2.473013242985916e-05,
+      "auto_benign_missed": 0.0001854759932239437
+    },
+    "ours_entropy_only": {
+      "n": 80873,
+      "review": 0.9994930322851879,
+      "auto_alert": 0.00032149172158816913,
+      "auto_benign_missed": 0.0001854759932239437
+    },
+    "rf": {
+      "n": 80873,
+      "review": 1.0,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.0
+    },
+    "ours_predicted_as": {
+      "Portscan": 0.9912,
+      "DoS Hulk": 0.0059,
+      "BENIGN": 0.0023,
+      "Infiltration": 0.0004
+    },
+    "in_distribution_referral": {
+      "hybrid": 0.01444741716402552,
+      "ours": 0.012693969952665158,
+      "rf": 0.006256431364478288
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.9990779995883927,
+      "rf": 0.9996871784317761
+    }
+  },
+  "Portscan": {
+    "n_unseen": 6540,
+    "hybrid": {
+      "n": 6540,
+      "review": 0.9568807339449541,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.043119266055045874
+    },
+    "ours": {
+      "n": 6540,
+      "review": 0.5948012232415902,
+      "auto_alert": 0.007798165137614679,
+      "auto_benign_missed": 0.3974006116207951
+    },
+    "ours_entropy_only": {
+      "n": 6540,
+      "review": 0.5288990825688074,
+      "auto_alert": 0.008256880733944955,
+      "auto_benign_missed": 0.4628440366972477
+    },
+    "rf": {
+      "n": 6540,
+      "review": 0.9467889908256881,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.05321100917431193
+    },
+    "ours_predicted_as": {
+      "BENIGN": 0.9338,
+      "Botnet": 0.0266,
+      "Infiltration": 0.0263,
+      "DDoS": 0.0086
+    },
+    "in_distribution_referral": {
+      "hybrid": 0.015597419435462456,
+      "ours": 0.013597950544386648,
+      "rf": 0.005061155630535639
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.9992111470390678,
+      "rf": 0.9997110142618367
+    }
+  },
+  "Botnet": {
+    "n_unseen": 1631,
+    "hybrid": {
+      "n": 1631,
+      "review": 0.897608828939301,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.10239117106069896
+    },
+    "ours": {
+      "n": 1631,
+      "review": 0.8761496014714899,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.12385039852851011
+    },
+    "ours_entropy_only": {
+      "n": 1631,
+      "review": 0.8761496014714899,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.12385039852851011
+    },
+    "rf": {
+      "n": 1631,
+      "review": 0.8920907418761496,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.1079092581238504
+    },
+    "ours_predicted_as": {
+      "Portscan": 0.5573,
+      "BENIGN": 0.4427
+    },
+    "in_distribution_referral": {
+      "hybrid": 0.01360660714424716,
+      "ours": 0.011940809702102486,
+      "rf": 0.005230915332342158
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.9984509640608094,
+      "rf": 0.9997742610942888
+    }
+  },
+  "Web Attack": {
+    "n_unseen": 1748,
+    "hybrid": {
+      "n": 1748,
+      "review": 0.9496567505720824,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.05034324942791762
+    },
+    "ours": {
+      "n": 1748,
+      "review": 0.03032036613272311,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.9696796338672768
+    },
+    "ours_entropy_only": {
+      "n": 1748,
+      "review": 0.03032036613272311,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.9696796338672768
+    },
+    "rf": {
+      "n": 1748,
+      "review": 0.9359267734553776,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.06407322654462243
+    },
+    "ours_predicted_as": {
+      "BENIGN": 1.0
+    },
+    "in_distribution_referral": {
+      "hybrid": 0.013327416956646972,
+      "ours": 0.011949523965217933,
+      "rf": 0.005433724904053496
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.9986999540702336,
+      "rf": 0.9997275352841807
+    }
+  },
+  "SSH-Patator": {
+    "n_unseen": 2540,
+    "hybrid": {
+      "n": 2540,
+      "review": 0.01062992125984252,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.9893700787401575
+    },
+    "ours": {
+      "n": 2540,
+      "review": 0.005905511811023622,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.9940944881889764
+    },
+    "ours_entropy_only": {
+      "n": 2540,
+      "review": 0.005905511811023622,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.9940944881889764
+    },
+    "rf": {
+      "n": 2540,
+      "review": 0.017716535433070866,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.9822834645669292
+    },
+    "ours_predicted_as": {
+      "BENIGN": 1.0
+    },
+    "in_distribution_referral": {
+      "hybrid": 0.013474884528807433,
+      "ours": 0.012220863483062927,
+      "rf": 0.0054522654162804645
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.9990419590768536,
+      "rf": 0.9996806530256178
+    }
+  },
+  "DoS Slowloris": {
+    "n_unseen": 4847,
+    "hybrid": {
+      "n": 4847,
+      "review": 0.9756550443573344,
+      "auto_alert": 0.0,
+      "auto_benign_missed": 0.024344955642665568
+    },
+    "ours": {
+      "n": 4847,
+      "review": 0.9321229626573138,
+      "auto_alert": 0.03610480709717351,
+      "auto_benign_missed": 0.031772230245512685
+    },
+    "ours_entropy_only": {
+      "n": 4847,
+      "review": 0.9317103362904889,
+      "auto_alert": 0.03610480709717351,
+      "auto_benign_missed": 0.032184856612337526
+    },
+    "rf": {
+      "n": 4847,
+      "review": 0.8724984526511244,
+      "auto_alert": 0.10336290488962245,
+      "auto_benign_missed": 0.024138642459253148
+    },
+    "ours_predicted_as": {
+      "BENIGN": 0.5696,
+      "DoS Slowhttptest": 0.4271,
+      "Botnet": 0.0017,
+      "Portscan": 0.001
+    },
+    "in_distribution_referral": {
+      "hybrid": 0.01350413081297832,
+      "ours": 0.012021874975620793,
+      "rf": 0.005609168142421382
+    },
+    "in_distribution_accuracy": {
+      "ours": 0.9990014276464118,
+      "rf": 0.9997113501790409
+    }
+  }
+}

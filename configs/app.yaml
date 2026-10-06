@@ -1,0 +1,39 @@
+# Portal / backend settings.
+bundle_dir: artifacts/bundles
+initial_bundle: v1                 # registered as the active model on first start
+replay_file: data/processed/replay.parquet
+
+replay:
+  batch_size: 50                   # flows scored per tick
+  interval_seconds: 1.0
+  # sequential = test split in timestamp order (realistic, ~83% benign)
+  # attack_mix = random order with attacks over-represented, for a lively demo
+  mode: attack_mix
+  attack_share: 0.3
+  seed: 42
+
+# Severity shown to the analyst. Review items are one level lower than auto alerts
+# of the same class (the model is less sure).
+severity:
+  high: [DDoS, DoS Hulk, DoS GoldenEye, DoS Slowloris, DoS Slowhttptest, Botnet,
+         Infiltration, Heartbleed, Web Attack]
+  medium: [Portscan, FTP-Patator, SSH-Patator]
+
+# Stage 11 - controlled retraining. These are copied into each job when it is
+# CREATED, so the bar is fixed before any training happens.
+retraining:
+  min_verified_feedback: 20
+  feedback_holdout_fraction: 0.3   # verified feedback held out to test the candidate
+  base_train_rows: 200000          # stratified sample of the original train split (replay guard)
+  feedback_repeat: 20              # each feedback row counts this many times
+  epochs: 2
+  lr: 0.0001
+  acceptance:
+    max_macro_f1_drop: 0.005       # on the fixed benchmark (validation eval half), reliable classes
+    max_fpr_increase: 0.0005       # absolute, on the fixed benchmark
+    min_feedback_accuracy_gain: 0.0  # candidate must be >= base on held-out feedback
+
+demo_users:                        # simulated login (change for a real deployment)
+  - {username: analyst, password: analyst123, full_name: Asha Analyst, role: analyst}
+  - {username: analyst2, password: analyst123, full_name: Ravi Reviewer, role: analyst}
+  - {username: admin, password: admin123, full_name: Admin User, role: admin}

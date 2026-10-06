@@ -1,0 +1,25 @@
+1/5 Loading raw CSVs ...
+    2,099,976 rows, 82 candidate features
+2/5 Removing duplicates and label conflicts ...
+    removed 385,106 duplicates, 58 conflicting -> 1,714,812 rows
+3/5 Stratified split ...
+4/5 Fitting preprocessor on TRAIN only ...
+    64 features kept, 18 dropped; val mean +0.000, std 0.995
+5/5 Writing report ...
+
+Class counts (train / val / test):
+  BENIGN                 996,410  213,517  213,516
+  DoS Hulk               111,333   23,857   23,858
+  DDoS                    66,601   14,272   14,271
+  Portscan                 5,386    1,154    1,155
+  DoS GoldenEye            5,353    1,147    1,147
+  DoS Slowloris            3,992      855      856
+  DoS Slowhttptest         3,576      766      766
+  FTP-Patator              2,789      597      598
+  SSH-Patator              2,092      448      448
+  Web Attack               1,439      309      308
+  Botnet                   1,343      288      288
+  Infiltration                46       10       10
+  Heartbleed                   8        2        1
+
+Done in 118.4s. Artifacts in C:\Users\Jai_Growth\IDS\artifacts\preprocessing

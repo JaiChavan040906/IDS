@@ -1,0 +1,71 @@
+Reading friday.csv ...
+Reading monday.csv ...
+Reading thursday.csv ...
+Reading tuesday.csv ...
+Reading wednesday.csv ...
+
+----------------------------------------------------------------------
+FILES (5), total rows: 2,099,976
+----------------------------------------------------------------------
+  friday.csv                                       547,557 rows  91 cols
+  monday.csv                                       371,624 rows  91 cols
+  thursday.csv                                     362,076 rows  91 cols
+  tuesday.csv                                      322,078 rows  91 cols
+  wednesday.csv                                    496,641 rows  91 cols
+
+----------------------------------------------------------------------
+COLUMNS (91)
+----------------------------------------------------------------------
+  id, Flow ID, Src IP, Src Port, Dst IP, Dst Port, Protocol, Timestamp, Flow Duration, Total Fwd Packet, Total Bwd packets, Total Length of Fwd Packet, Total Length of Bwd Packet, Fwd Packet Length Max, Fwd Packet Length Min, Fwd Packet Length Mean, Fwd Packet Length Std, Bwd Packet Length Max, Bwd Packet Length Min, Bwd Packet Length Mean, Bwd Packet Length Std, Flow Bytes/s, Flow Packets/s, Flow IAT Mean, Flow IAT Std, Flow IAT Max, Flow IAT Min, Fwd IAT Total, Fwd IAT Mean, Fwd IAT Std, Fwd IAT Max, Fwd IAT Min, Bwd IAT Total, Bwd IAT Mean, Bwd IAT Std, Bwd IAT Max, Bwd IAT Min, Fwd PSH Flags, Bwd PSH Flags, Fwd URG Flags, Bwd URG Flags, Fwd RST Flags, Bwd RST Flags, Fwd Header Length, Bwd Header Length, Fwd Packets/s, Bwd Packets/s, Packet Length Min, Packet Length Max, Packet Length Mean, Packet Length Std, Packet Length Variance, FIN Flag Count, SYN Flag Count, RST Flag Count, PSH Flag Count, ACK Flag Count, URG Flag Count, CWR Flag Count, ECE Flag Count, Down/Up Ratio, Average Packet Size, Fwd Segment Size Avg, Bwd Segment Size Avg, Fwd Bytes/Bulk Avg, Fwd Packet/Bulk Avg, Fwd Bulk Rate Avg, Bwd Bytes/Bulk Avg, Bwd Packet/Bulk Avg, Bwd Bulk Rate Avg, Subflow Fwd Packets, Subflow Fwd Bytes, Subflow Bwd Packets, Subflow Bwd Bytes, FWD Init Win Bytes, Bwd Init Win Bytes, Fwd Act Data Pkts, Fwd Seg Size Min, Active Mean, Active Std, Active Max, Active Min, Idle Mean, Idle Std, Idle Max, Idle Min, ICMP Code, ICMP Type, Total TCP Flow Time, Label, Attempted Category
+
+  Identifier columns to drop: ['id', 'Flow ID', 'Src IP', 'Src Port', 'Dst IP', 'Timestamp']
+  Duplicate column names:     none
+  Identical-content columns:  none
+  Constant columns:           none
+  Columns with negatives:     ['Attempted Category', 'Bwd Header Length', 'Fwd Header Length', 'ICMP Code', 'ICMP Type']
+
+----------------------------------------------------------------------
+CLASSES (27)
+----------------------------------------------------------------------
+  BENIGN                                         1,582,566   75.3611%
+  Portscan                                         159,066    7.5747%
+  DoS Hulk                                         158,468    7.5462%
+  DDoS                                              95,144    4.5307%
+  Infiltration - Portscan                           71,767    3.4175%
+  DoS GoldenEye                                      7,567    0.3603%
+  Botnet - Attempted                                 4,067    0.1937%
+  FTP-Patator                                        3,972    0.1891%
+  DoS Slowloris                                      3,859    0.1838%
+  DoS Slowhttptest - Attempted                       3,368    0.1604%
+  SSH-Patator                                        2,961    0.1410%
+  DoS Slowloris - Attempted                          1,847    0.0880%
+  DoS Slowhttptest                                   1,740    0.0829%
+  Web Attack - Brute Force - Attempted               1,292    0.0615%
+  Botnet                                               736    0.0350%
+  Web Attack - XSS - Attempted                         655    0.0312%
+  DoS Hulk - Attempted                                 581    0.0277%
+  DoS GoldenEye - Attempted                             80    0.0038%
+  Web Attack - Brute Force                              73    0.0035%
+  Infiltration - Attempted                              45    0.0021%
+  Infiltration                                          36    0.0017%
+  SSH-Patator - Attempted                               27    0.0013%
+  Web Attack - XSS                                      18    0.0009%
+  Web Attack - SQL Injection                            13    0.0006%
+  FTP-Patator - Attempted                               12    0.0006%
+  Heartbleed                                            11    0.0005%
+  Web Attack - SQL Injection - Attempted                 5    0.0002%
+
+----------------------------------------------------------------------
+MISSING / INFINITE
+----------------------------------------------------------------------
+  NaN: none
+  Inf: {'Flow Bytes/s': 5, 'Flow Packets/s': 5}
+
+----------------------------------------------------------------------
+DUPLICATES
+----------------------------------------------------------------------
+  Exact duplicate rows:            0 (0.00%)
+  Duplicates after dropping IDs:   263,005 (12.52%)
+  Feature vectors with >1 label:   4,375
+
+Reports written to C:\Users\Jai_Growth\IDS\reports\eda

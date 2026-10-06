@@ -1,0 +1,12 @@
+[project]
+name = "ids"
+version = "0.1.0"
+description = "Human-in-the-loop AI intrusion detection system (TE CMPN project)"
+requires-python = ">=3.11"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,17 @@
+T = 1.013 | ECE 0.00023 -> 0.00022 | NLL 0.00252 -> 0.00252
+thresholds {'entropy': 0.004784201578854306, 'distance': 1688.6894382338976, 'entropy_referral_rate': 0.01, 'distance_quantile': 0.995}
+rf threshold 0.020000000000000018
+{
+ "referral_rate": 0.014431113979364129,
+ "error_overall": 0.0007231107759056379,
+ "error_on_auto_handled": 1.5778470277306616e-05,
+ "errors_caught_by_review": 0.978494623655914,
+ "missed_attacks_auto_benign": 2,
+ "false_alarms_auto_alert": 0,
+ "counts": {
+  "auto_alert": 20731,
+  "auto_benign": 106024,
+  "review": 1856
+ }
+}
+Bundle written to artifacts\bundles\v1

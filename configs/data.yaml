@@ -1,0 +1,59 @@
+# Stage 2 - data preparation config. Changing anything here changes the dataset,
+# so re-run scripts/prepare_data.py and retrain everything afterwards.
+
+dataset: Improved CIC-IDS2017 (Engelen et al.), Kaggle ernie55ernie/improved-cicids2017-and-csecicids2018
+seed: 42
+raw_dir: data/raw
+processed_dir: data/processed
+artifact_dir: artifacts/preprocessing
+
+split: {train: 0.70, val: 0.15, test: 0.15}
+
+# Never used as model features.
+#  - identifiers / shortcuts (CLAUDE.md data rules)
+#  - "Attempted Category" is label metadata: it would leak the answer
+drop_columns: [id, Flow ID, Src IP, Src Port, Dst IP, Timestamp, Attempted Category]
+
+# Destination port is a shortcut risk (e.g. "port 21 => FTP-Patator").
+# Excluded by default; kept in the processed files so we can run an ablation.
+use_dst_port: false
+
+feature_selection:
+  corr_threshold: 0.99      # drop a feature if |corr| > this with an earlier kept one
+  corr_sample_rows: 300000  # rows of TRAIN used to compute correlations
+
+# Raw label -> final class (decided after EDA, see reports/eda/EDA_SUMMARY.md).
+#  - "Attempted" attacks are merged into their attack class
+#  - Infiltration - Portscan has identical features to Portscan -> merged
+#  - the three tiny web attacks are grouped
+label_map:
+  BENIGN: BENIGN
+  Portscan: Portscan
+  Infiltration - Portscan: Portscan
+  DoS Hulk: DoS Hulk
+  DoS Hulk - Attempted: DoS Hulk
+  DDoS: DDoS
+  DoS GoldenEye: DoS GoldenEye
+  DoS GoldenEye - Attempted: DoS GoldenEye
+  DoS Slowloris: DoS Slowloris
+  DoS Slowloris - Attempted: DoS Slowloris
+  DoS Slowhttptest: DoS Slowhttptest
+  DoS Slowhttptest - Attempted: DoS Slowhttptest
+  FTP-Patator: FTP-Patator
+  FTP-Patator - Attempted: FTP-Patator
+  SSH-Patator: SSH-Patator
+  SSH-Patator - Attempted: SSH-Patator
+  Botnet: Botnet
+  Botnet - Attempted: Botnet
+  Web Attack - Brute Force: Web Attack
+  Web Attack - Brute Force - Attempted: Web Attack
+  Web Attack - XSS: Web Attack
+  Web Attack - XSS - Attempted: Web Attack
+  Web Attack - SQL Injection: Web Attack
+  Web Attack - SQL Injection - Attempted: Web Attack
+  Infiltration: Infiltration
+  Infiltration - Attempted: Infiltration
+  Heartbleed: Heartbleed
+
+# Classes with too few samples to trust per-class metrics; always reported with a caveat.
+unreliable_classes: [Heartbleed, Infiltration]

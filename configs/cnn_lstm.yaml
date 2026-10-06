@@ -1,0 +1,13 @@
+# Stage 4 - CNN-LSTM (paper Table 5). Evaluated on VALIDATION only.
+seeds: [42, 7, 2025]
+output_dir: artifacts/models
+report_dir: reports/cnn_lstm
+
+train:
+  batch_size: 1024
+  lr: 0.001
+  weight_decay: 0.0001
+  dropout: 0.3
+  max_epochs: 20
+  patience: 4           # stop after 4 epochs without val macro-F1 improvement
+  min_class_rows: 1000  # random oversampling (train only) for tiny classes

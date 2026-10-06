@@ -1,0 +1,21 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "portal",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "ids.api.main:app", "--port", "8000"],
+      "port": 8000
+    },
+    {
+      "name": "portal-ui-check",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "ids.api.main:app", "--port", "8010"],
+      "port": 8010,
+      "env": {
+        "IDS_DB_URL": "sqlite:///.pytest_tmp/ui.db",
+        "IDS_APP_CONFIG": ".pytest_tmp/app.yaml"
+      }
+    }
+  ]
+}

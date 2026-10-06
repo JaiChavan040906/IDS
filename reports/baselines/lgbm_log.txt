@@ -1,0 +1,41 @@
+train (1200368, 64), val (257222, 64), 13 classes
+
+== lightgbm seed 42 ==
+  99s | acc 0.9996 macroF1 0.9881 | binary F1 0.9989 DR 0.9992 FPR 0.00026 | {'best_iteration': 96}
+
+== lightgbm seed 7 ==
+  110s | acc 0.9996 macroF1 0.9881 | binary F1 0.9990 DR 0.9991 FPR 0.00024 | {'best_iteration': 78}
+
+== lightgbm seed 2025 ==
+  100s | acc 0.9996 macroF1 0.9879 | binary F1 0.9989 DR 0.9992 FPR 0.00027 | {'best_iteration': 79}
+
+# Baselines - validation set (mean ± std over seeds, %)
+
+| metric | lightgbm | random_forest |
+|---|---|---|
+| accuracy | 99.96 ± 0.00 | 99.97 ± 0.00 |
+| macro_f1 | 98.80 ± 0.01 | 98.54 ± 0.01 |
+| macro_f1_reliable | 99.06 ± 0.01 | 99.28 ± 0.02 |
+| bin_precision | 99.87 ± 0.01 | 99.93 ± 0.00 |
+| detection_rate | 99.91 ± 0.01 | 99.91 ± 0.00 |
+| bin_f1 | 99.89 ± 0.00 | 99.92 ± 0.00 |
+| fpr | 0.026 ± 0.002 | 0.015 ± 0.001 |
+| fnr | 0.085 ± 0.005 | 0.088 ± 0.005 |
+
+## Per-class recall (%)
+
+| class | lightgbm | random_forest |
+|---|---|---|
+| BENIGN | 99.97 ± 0.00 | 99.99 ± 0.00 |
+| DoS Hulk | 99.99 ± 0.00 | 99.99 ± 0.00 |
+| DDoS | 100.00 ± 0.00 | 100.00 ± 0.00 |
+| Portscan | 99.83 ± 0.00 | 99.80 ± 0.05 |
+| DoS GoldenEye | 99.91 ± 0.00 | 99.74 ± 0.00 |
+| DoS Slowloris | 99.88 ± 0.00 | 99.77 ± 0.20 |
+| DoS Slowhttptest | 99.17 ± 0.30 | 98.69 ± 0.00 |
+| FTP-Patator | 100.00 ± 0.00 | 100.00 ± 0.00 |
+| SSH-Patator | 99.55 ± 0.00 | 99.55 ± 0.00 |
+| Web Attack | 99.03 ± 0.00 | 97.95 ± 0.19 |
+| Botnet | 90.62 ± 0.00 | 95.14 ± 0.00 |
+| Infiltration | 90.00 ± 0.00 | 80.00 ± 0.00 |
+| Heartbleed | 100.00 ± 0.00 | 100.00 ± 0.00 |
