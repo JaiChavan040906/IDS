@@ -1,0 +1,134 @@
+{
+  "file": "Friday-16-02-2018_TrafficForML_CICFlowMeter.csv",
+  "bundle": "v1",
+  "import": {
+    "id": "a1787c2c27",
+    "name": "Friday-16-02-2018_TrafficForML_CICFlowMeter",
+    "file": "Friday-16-02-2018_TrafficForML_CICFlowMeter.csv",
+    "created_at": "2026-10-11T04:06:23.862780+00:00",
+    "rows_in_file": 1048575,
+    "rows_kept": 499854,
+    "sampled": true,
+    "labelled": true,
+    "label_counts": {
+      "DoS Hulk": 220894,
+      "BENIGN": 212601,
+      "DoS Slowhttptest": 66359
+    },
+    "attack_share": 0.5746738047509873,
+    "unmapped_labels": [],
+    "features_found": 77,
+    "features_total": 82,
+    "quality": "good",
+    "quality_note": null,
+    "columns_in_file": 80,
+    "columns_ignored": [],
+    "features_missing": [
+      "Fwd RST Flags",
+      "Bwd RST Flags",
+      "ICMP Code",
+      "ICMP Type",
+      "Total TCP Flow Time"
+    ],
+    "column_renames": {
+      "Tot Fwd Pkts": "Total Fwd Packet",
+      "Tot Bwd Pkts": "Total Bwd packets",
+      "TotLen Fwd Pkts": "Total Length of Fwd Packet",
+      "TotLen Bwd Pkts": "Total Length of Bwd Packet",
+      "Fwd Pkt Len Max": "Fwd Packet Length Max",
+      "Fwd Pkt Len Min": "Fwd Packet Length Min",
+      "Fwd Pkt Len Mean": "Fwd Packet Length Mean",
+      "Fwd Pkt Len Std": "Fwd Packet Length Std",
+      "Bwd Pkt Len Max": "Bwd Packet Length Max",
+      "Bwd Pkt Len Min": "Bwd Packet Length Min",
+      "Bwd Pkt Len Mean": "Bwd Packet Length Mean",
+      "Bwd Pkt Len Std": "Bwd Packet Length Std",
+      "Flow Byts/s": "Flow Bytes/s",
+      "Flow Pkts/s": "Flow Packets/s",
+      "Fwd IAT Tot": "Fwd IAT Total",
+      "Bwd IAT Tot": "Bwd IAT Total",
+      "Fwd Header Len": "Fwd Header Length",
+      "Bwd Header Len": "Bwd Header Length",
+      "Fwd Pkts/s": "Fwd Packets/s",
+      "Bwd Pkts/s": "Bwd Packets/s",
+      "Pkt Len Min": "Packet Length Min",
+      "Pkt Len Max": "Packet Length Max",
+      "Pkt Len Mean": "Packet Length Mean",
+      "Pkt Len Std": "Packet Length Std",
+      "Pkt Len Var": "Packet Length Variance",
+      "FIN Flag Cnt": "FIN Flag Count",
+      "SYN Flag Cnt": "SYN Flag Count",
+      "RST Flag Cnt": "RST Flag Count",
+      "PSH Flag Cnt": "PSH Flag Count",
+      "ACK Flag Cnt": "ACK Flag Count",
+      "URG Flag Cnt": "URG Flag Count",
+      "CWE Flag Count": "CWR Flag Count",
+      "ECE Flag Cnt": "ECE Flag Count",
+      "Pkt Size Avg": "Average Packet Size",
+      "Fwd Seg Size Avg": "Fwd Segment Size Avg",
+      "Bwd Seg Size Avg": "Bwd Segment Size Avg",
+      "Fwd Byts/b Avg": "Fwd Bytes/Bulk Avg",
+      "Fwd Pkts/b Avg": "Fwd Packet/Bulk Avg",
+      "Fwd Blk Rate Avg": "Fwd Bulk Rate Avg",
+      "Bwd Byts/b Avg": "Bwd Bytes/Bulk Avg",
+      "Bwd Pkts/b Avg": "Bwd Packet/Bulk Avg",
+      "Bwd Blk Rate Avg": "Bwd Bulk Rate Avg",
+      "Subflow Fwd Pkts": "Subflow Fwd Packets",
+      "Subflow Fwd Byts": "Subflow Fwd Bytes",
+      "Subflow Bwd Pkts": "Subflow Bwd Packets",
+      "Subflow Bwd Byts": "Subflow Bwd Bytes",
+      "Init Fwd Win Byts": "FWD Init Win Bytes",
+      "Init Bwd Win Byts": "Bwd Init Win Bytes"
+    }
+  },
+  "flows": 499854,
+  "routing": {
+    "auto_benign": 0.0,
+    "auto_alert": 0.0,
+    "review": 1.0
+  },
+  "labelled_flows": 499854,
+  "attacks": 287253,
+  "benign": 212601,
+  "detection_rate": 1.0,
+  "attack_miss_rate": 0.0,
+  "false_alarm_rate": 0.0,
+  "benign_referral_rate": 1.0,
+  "model_alone_detection_rate": 0.9555722655638061,
+  "model_alone_false_alarm_rate": 0.0041298018353629565,
+  "exact_class_accuracy_known_classes": 0.4235696823472454,
+  "per_label": {
+    "BENIGN": {
+      "n": 212601,
+      "known_class": true,
+      "review": 1.0,
+      "auto_alert": 0.0,
+      "auto_benign": 0.0,
+      "top_predictions": {
+        "BENIGN": 0.996,
+        "Portscan": 0.004
+      }
+    },
+    "DoS Hulk": {
+      "n": 220894,
+      "known_class": true,
+      "review": 1.0,
+      "auto_alert": 0.0,
+      "auto_benign": 0.0,
+      "top_predictions": {
+        "Portscan": 0.942,
+        "BENIGN": 0.058
+      }
+    },
+    "DoS Slowhttptest": {
+      "n": 66359,
+      "known_class": true,
+      "review": 1.0,
+      "auto_alert": 0.0,
+      "auto_benign": 0.0,
+      "top_predictions": {
+        "Portscan": 1.0
+      }
+    }
+  }
+}

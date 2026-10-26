@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api, pct, time } from '../../api'
-import { Badge, ErrorBox, useApi } from '../../components/ui'
+import { Badge, ErrorBox, Meter, useApi } from '../../components/ui'
+import { BarList, SERIES, useVisual } from '../../components/charts'
 
 const CHECK_LABELS = {
   macro_f1_drop: ['Benchmark macro-F1 drop', 'at most', true],
@@ -19,6 +20,11 @@ export default function Retraining() {
   }
   const acc = data?.config?.acceptance
   const need = data?.config?.min_verified_feedback
+  const have = data?.usable_feedback ?? 0
+  const locked = !data || data.busy || have < need
+  const lockReason = data?.busy ? 'A retraining run is already in progress'
+    : have < need ? `Locked: needs ${need - have} more verified analyst decision${need - have === 1 ? '' : 's'} (${have} of ${need})`
+      : 'Ready: start a retraining run'
   return (
     <div className="stack">
       <ErrorBox error={error} />
@@ -30,14 +36,17 @@ export default function Retraining() {
             recalibrates it, and evaluates it. It is registered as a <b>candidate</b>. Nothing is deployed until you approve and deploy it.
           </p>
           <div className="row">
-            <span className="big-num" style={{ fontSize: 30 }}>{data?.usable_feedback ?? '–'}</span>
-            <span className="muted">verified, trainable feedback items<br /><span className="faint small">minimum {need}</span></span>
+            <span className="big-num" style={{ fontSize: 30 }}>{data ? `${have} / ${need}` : '–'}</span>
+            <span className="muted">verified, trainable feedback items<br /><span className="faint small">minimum {need} to unlock retraining</span></span>
           </div>
+          {data && <Meter value={Math.min(1, have / Math.max(1, need))} color={have >= need ? '' : 'amber'} />}
           <ErrorBox error={startErr} />
           <div className="row">
-            <button className="btn primary" disabled={!data || data.busy || data.usable_feedback < need} onClick={start}>
-              {data?.busy ? 'Retraining in progress…' : 'Start retraining'}
-            </button>
+            <span title={lockReason} style={{ display: 'inline-flex' }}>
+              <button className="btn primary" disabled={locked} onClick={start} title={lockReason}>
+                {data?.busy ? 'Retraining in progress…' : locked ? 'Start retraining (locked)' : 'Start retraining'}
+              </button>
+            </span>
             <Link to="/admin/feedback" className="btn ghost">Verify feedback</Link>
           </div>
         </div>
@@ -55,6 +64,8 @@ export default function Retraining() {
           <p className="faint small" style={{ marginTop: 10 }}>Benchmark = fixed validation half, never used for training.</p>
         </div>
       </div>
+
+      {data?.demo_tools && <DemoTools need={need} have={have} demoCount={data.demo_decisions} onChange={reload} />}
 
       <div className="card pad-0">
         <div className="table-wrap">
@@ -84,6 +95,7 @@ export default function Retraining() {
 
 function JobDetail({ job }) {
   const r = job.results || {}
+  const visual = useVisual()
   return (
     <div className="grid g2">
       <div className="card">
@@ -112,6 +124,16 @@ function JobDetail({ job }) {
                 <tr key={k}><td>{l}</td><td className="mono right">{pct(r.base?.[k], d)}</td><td className="mono right">{pct(r.candidate?.[k], d)}</td></tr>
               ))}</tbody>
             </table>
+            {visual && r.base && r.candidate && (
+              <div className="viz-card stack" style={{ gap: 14 }}>
+                {[['Benchmark macro-F1 (reliable)', 'benchmark_macro_f1_reliable'], ['Held-out feedback accuracy', 'feedback_holdout_accuracy'],
+                  ['Benchmark detection rate', 'benchmark_detection_rate']].map(([l, k]) => (
+                  <BarList key={k} title={l} max={1} format={(v) => pct(v, 2)}
+                    items={[{ label: job.base_version, value: r.base[k] ?? 0, color: SERIES[0] },
+                      { label: job.candidate_version, value: r.candidate[k] ?? 0, color: SERIES[1] }]} />
+                ))}
+              </div>
+            )}
             <p className="faint small" style={{ marginTop: 8 }}>{r.n_feedback_train} feedback items used for training, {r.n_feedback_holdout} held out.</p>
           </>
         ) : <p className="muted">Results appear when the job finishes.</p>}
@@ -120,6 +142,44 @@ function JobDetail({ job }) {
         <h3>Log</h3>
         <pre className="log">{job.log || 'Waiting…'}</pre>
       </div>
+    </div>
+  )
+}
+
+function DemoTools({ need, have, demoCount, onChange }) {
+  const suggested = Math.max(1, (need ?? 20) - (have ?? 0) - 1)   // leave one decision to make live
+  const [count, setCount] = useState(suggested)
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState(null)
+  const [error, setError] = useState(null)
+  const run = async (method, body) => {
+    setBusy(true); setError(null); setMsg(null)
+    try {
+      const r = await api('/admin/demo/feedback', { method, body })
+      setMsg(method === 'POST'
+        ? `Added ${r.created} demo decision${r.created === 1 ? '' : 's'}${r.created < r.requested ? ` (only ${r.created} open alerts were available)` : ''}.`
+        : `Removed ${r.removed} demo decision${r.removed === 1 ? '' : 's'}; their alerts are open again.`)
+      onChange()
+    } catch (e) { setError(e) } finally { setBusy(false) }
+  }
+  return (
+    <div className="card stack" style={{ borderStyle: 'dashed' }}>
+      <div className="card-head" style={{ margin: 0 }}><h3>Retraining demo</h3><Badge kind="candidate">presentation helper</Badge></div>
+      <p className="muted small" style={{ margin: 0 }}>
+        Adds clearly marked <b>demo</b> decisions (analyst &quot;demo&quot;, tag &quot;demo&quot;) to open alerts, already verified, so you can show the
+        retraining threshold without reviewing {need} alerts by hand. Each demo decision <b>accepts the model&apos;s own prediction</b> and never uses
+        the hidden true label. Tip: add {suggested} (you have {have} of {need}), then make the last decision live and verify it to unlock retraining.
+      </p>
+      <div className="row">
+        <label className="field" style={{ width: 160 }}>Demo decisions to add
+          <input type="number" min="1" max="200" value={count} onChange={(e) => setCount(Number(e.target.value))} />
+        </label>
+        <button className="btn" disabled={busy || count < 1} onClick={() => run('POST', { count, verified: true })}>Add demo decisions</button>
+        <button className="btn ghost" disabled={busy || !demoCount} onClick={() => run('DELETE')}>Remove demo decisions ({demoCount})</button>
+      </div>
+      <p className="faint small" style={{ margin: 0 }}>Verified decisions now: {have} of {need}. Turn this card off with <span className="mono">demo_tools: false</span> in configs/app.yaml.</p>
+      {msg && <div className="success">{msg}</div>}
+      <ErrorBox error={error} />
     </div>
   )
 }

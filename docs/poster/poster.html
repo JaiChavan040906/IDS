@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sentinel IDS poster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* A4 portrait, printed edge to edge: 210 x 297 mm = 794 x 1123 CSS px */
+@page { size: A4; margin: 0; }
+:root {
+  --paper: #F3F5F2; --ink: #121A21; --muted: #4A5560; --rule: #C9CFCB; --card: #FFFFFF;
+  --signal: #D4501A; --machine: #1F5FAD; --soft: #E3E7E3;
+  --display: 'Archivo', 'Arial Narrow', sans-serif;
+  --body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); }
+body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.sheet { width: 794px; height: 1123px; overflow: hidden; padding: 36px 42px 30px; display: flex; flex-direction: column; gap: 12px;
+  background: var(--paper); color: var(--ink); font: 12.5px/1.42 var(--body); }
+.kicker { font: 600 11.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.muted { color: var(--muted); }
+.mono { font-family: var(--mono); }
+b { font-weight: 600; }
+
+.topline { display: flex; justify-content: space-between; gap: 16px; font: 500 11px var(--mono); letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted); border-bottom: 1.5px solid var(--ink); padding-bottom: 7px; }
+
+.title { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
+.title h1 { margin: 0; font: 900 88px/0.86 var(--display); font-stretch: 68%; letter-spacing: -0.01em; text-transform: uppercase; }
+.title .tag { font: 700 24px/1.12 var(--display); font-stretch: 88%; max-width: 330px; margin-bottom: 4px; text-wrap: balance; }
+.byline { display: flex; justify-content: space-between; gap: 16px; font-size: 12.5px; color: var(--muted); margin-top: -6px; }
+.byline b { color: var(--ink); }
+
+.lede { font-size: 13.5px; line-height: 1.48; margin: 0; }
+
+/* the central picture: what happened to every test flow */
+.route { border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); padding: 10px 0 11px; display: flex; flex-direction: column; gap: 8px; }
+.route .head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.bar { display: flex; height: 40px; border-radius: 4px; overflow: hidden; font: 600 12px var(--mono); }
+.bar div { display: flex; align-items: center; padding: 0 10px; white-space: nowrap; }
+.seg-closed { flex: 212015 1 0; background: #DDE4DD; color: var(--ink); }
+.seg-alert { flex: 41401 1 0; background: #5B6670; color: #FFFFFF; }
+.seg-human { flex: 0 0 132px; background: var(--signal); color: #FFFFFF; justify-content: center; }
+.keys { display: grid; grid-template-columns: 1.35fr 1fr 1.15fr; gap: 12px; font-size: 12px; }
+.keys span { display: flex; align-items: baseline; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 2px; flex: none; align-self: center; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.stats > div { padding: 2px 12px; border-left: 1px solid var(--rule); display: flex; flex-direction: column; gap: 1px; }
+.stats > div:first-child { padding-left: 0; border-left: 0; }
+.big { font: 800 34px/1 var(--display); font-stretch: 74%; }
+
+/* how it works */
+.steps { display: flex; align-items: stretch; gap: 5px; }
+.step { flex: 1 1 0; min-width: 0; background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 9px 9px 10px;
+  display: flex; flex-direction: column; gap: 3px; }
+.step .n { font: 600 11px var(--mono); color: var(--machine); }
+.step b { font-size: 12.5px; line-height: 1.2; }
+.step span { font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+.step.human { border: 2px solid var(--signal); padding: 8px 8px 9px; }
+.step.human .n { color: var(--signal); }
+.chev { align-self: center; flex: none; }
+.loop { display: flex; align-items: center; gap: 10px; background: var(--soft); border-radius: 6px; padding: 8px 12px; font-size: 12px; }
+
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.col { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.split { display: flex; height: 24px; border-radius: 4px; overflow: hidden; font: 500 11px var(--mono); color: #FFFFFF; }
+.split div { display: flex; align-items: center; justify-content: center; }
+.arch { font: 500 11px/1.55 var(--mono); background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 7px 10px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+th { font-weight: 600; text-align: right; padding: 3px 6px; border-bottom: 1.5px solid var(--ink); }
+td { text-align: right; padding: 4px 6px; border-bottom: 1px solid var(--rule); }
+th:first-child, td:first-child { text-align: left; padding-left: 0; }
+th:last-child, td:last-child { padding-right: 0; }
+tr:last-child td { border-bottom: 0; }
+
+.unseen { display: grid; grid-template-columns: 84px minmax(0, 1fr) 46px; column-gap: 10px; row-gap: 4px; align-items: center; font-size: 12px; }
+.track { height: 9px; background: #E1E5E1; border-radius: 2px; }
+.track i { display: block; height: 9px; border-radius: 2px; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.tile { white-space: nowrap; background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 12px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.pair { display: flex; align-items: baseline; gap: 8px; font-variant-numeric: tabular-nums; }
+.pair s { text-decoration: none; color: #6B757D; font: 700 20px var(--display); font-stretch: 78%; }
+.pair em { font-style: normal; color: var(--signal); font: 800 26px var(--display); font-stretch: 74%; }
+.pair .arrow { color: var(--muted); font-size: 14px; }
+.roles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.role { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 7px 12px; display: flex; flex-direction: column; gap: 3px; font-size: 12px; }
+
+.foot { margin-top: auto; display: flex; justify-content: space-between; gap: 16px; border-top: 1px solid var(--ink); padding-top: 7px; font-size: 11px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main class="sheet">
+
+  <div class="topline"><span>Vidyalankar Institute of Technology · Dept. of Computer Engineering</span><span>TE Project · 2026</span></div>
+
+  <div class="title">
+    <h1>Sentinel</h1>
+    <div class="tag">An intrusion detection system that knows when to ask a human.</div>
+  </div>
+  <div class="byline"><span><b>Jai Chavan · Jeet Mane</b></span><span>Guide: <b>Prof. Divya Nimbalkar</b></span></div>
+
+  <p class="lede">Most AI detectors decide every case alone and stay silent when wrong. Sentinel handles what it is sure about,
+  asks a security analyst about the rest, and learns from verified decisions under rules fixed in advance.</p>
+
+  <section class="route">
+    <div class="head"><span class="kicker">What happened to 257,222 unseen test flows</span><span class="muted" style="font-size:11.5px">held-out CIC-IDS2017 traffic, never used in training</span></div>
+    <div class="bar" role="img" aria-label="82.4 percent closed automatically, 16.1 percent confident alerts, 1.48 percent sent to an analyst">
+      <div class="seg-closed">Closed automatically · 82.4%</div>
+      <div class="seg-alert">Alert · 16.1%</div>
+      <div class="seg-human">Analyst · 1.48%</div>
+    </div>
+    <div class="keys">
+      <span><i class="dot" style="background:#DDE4DD; border:1px solid #AAB3AC"></i><span><b>212,015</b> sure-normal flows closed</span></span>
+      <span><i class="dot" style="background:#5B6670"></i><span><b>41,401</b> confident attack alerts</span></span>
+      <span><i class="dot" style="background:var(--signal)"></i><span><b>3,806</b> doubtful flows for a human</span></span>
+    </div>
+    <div class="stats">
+      <div><span class="big" style="color:var(--signal)">98.9%</span><span>of the model's mistakes land in the analyst's queue</span></div>
+      <div><span class="big">99.999%</span><span>correct on the traffic handled without a human</span></div>
+      <div><span class="big">2</span><span>of 43,706 attack flows closed as normal</span></div>
+      <div><span class="big">0</span><span>false alarms on 213,516 normal flows</span></div>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:8px">
+    <span class="kicker">How it works</span>
+    <div class="steps">
+      <div class="step"><span class="n">01</span><b>A flow arrives</b><span>64 measurements of one conversation. No IPs or ports.</span></div>
+      <svg class="chev" aria-hidden="true" width="10" height="18" viewBox="0 0 10 18"><path d="M2 2 L8 9 L2 16" fill="none" stroke="#121A21" stroke-width="2"/></svg>
+      <div class="step"><span class="n">02</span><b>CNN-LSTM classifies</b><span>Normal, or one of 12 attack types.</span></div>
+      <svg class="chev" aria-hidden="true" width="10" height="18" viewBox="0 0 10 18"><path d="M2 2 L8 9 L2 16" fill="none" stroke="#121A21" stroke-width="2"/></svg>
+      <div class="step"><span class="n">03</span><b>Three checks</b><span>Hesitant? Unfamiliar? Second model disagrees?</span></div>
+      <svg class="chev" aria-hidden="true" width="10" height="18" viewBox="0 0 10 18"><path d="M2 2 L8 9 L2 16" fill="none" stroke="#121A21" stroke-width="2"/></svg>
+      <div class="step"><span class="n">04</span><b>Route it</b><span>Sure: closed or alerted. Any doubt: analyst.</span></div>
+      <svg class="chev" aria-hidden="true" width="10" height="18" viewBox="0 0 10 18"><path d="M2 2 L8 9 L2 16" fill="none" stroke="#121A21" stroke-width="2"/></svg>
+      <div class="step human"><span class="n">05</span><b>Analyst decides</b><span>Verdict with reason, beside similar past cases.</span></div>
+    </div>
+    <div class="loop">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" style="flex:none"><path d="M14.5 6.5 A6.5 6.5 0 1 0 15.5 10" fill="none" stroke="#121A21" stroke-width="2"/><path d="M15.5 2.5 L15 7 L10.5 6.5" fill="none" stroke="#121A21" stroke-width="2"/></svg>
+      <span><b>The learning loop.</b> An administrator verifies analyst decisions, retrains a candidate model, and deploys it only if it passes three rules set before training. Any deployment can be rolled back in one click.</span>
+    </div>
+  </section>
+
+  <section class="two">
+    <div class="col">
+      <span class="kicker">Data and model</span>
+      <span>Improved CIC-IDS2017, five days of labelled lab traffic: 2,099,976 flows, <b>1,714,812</b> after removing duplicates.</span>
+      <div class="split">
+        <div style="flex:70 1 0; background:var(--machine); justify-content:flex-start; padding-left:8px">Train 70%</div>
+        <div style="flex:15 1 0; background:#5B6670">Val 15</div>
+        <div style="flex:15 1 0; background:var(--ink)">Test 15</div>
+      </div>
+      <div class="arch">Conv1D 64 → Pool → Conv1D 128 → LSTM 128<br>→ 13 classes <span class="muted">· + Random Forest (RF) 2nd opinion</span></div>
+    </div>
+    <div class="col">
+      <span class="kicker">Accuracy · mean of 3 training runs</span>
+      <table>
+        <thead><tr><th>Attack vs normal</th><th>Paper</th><th>RF</th><th>CNN-LSTM</th></tr></thead>
+        <tbody>
+          <tr><td>Detection rate</td><td>96.6%</td><td>99.92%</td><td>99.75%</td></tr>
+          <tr><td>Precision</td><td>92.1%</td><td>99.90%</td><td>99.71%</td></tr>
+          <tr><td>F1 score</td><td>94.3%</td><td>99.91%</td><td>99.73%</td></tr>
+          <tr><td>Macro-F1 (11 classes)</td><td>–</td><td>99.23%</td><td>98.09%</td></tr>
+        </tbody>
+      </table>
+      <span class="muted" style="font-size:11.5px">Indicative only: our data cleaning differs from the paper's. Trees stay slightly more accurate.</span>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:7px">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px">
+      <span class="kicker">Attacks the model never saw in training</span>
+      <span class="muted" style="font-size:11.5px">share of the attack's flows closed as normal · lower is better</span>
+    </div>
+    <div class="tiles">
+      <div class="tile"><b>Web attack</b><span class="pair"><s>97.0%</s><span class="arrow">→</span><em>5.0%</em></span></div>
+      <div class="tile"><b>Port scan</b><span class="pair"><s>39.7%</s><span class="arrow">→</span><em>4.3%</em></span></div>
+      <div class="tile"><b>Botnet</b><span class="pair"><s>12.4%</s><span class="arrow">→</span><em>10.2%</em></span></div>
+    </div>
+    <span class="muted" style="font-size:11.5px">Grey: CNN-LSTM alone. Orange: with Sentinel's routing. Brute-force SSH logins still pass: each login looks normal alone.</span>
+  </section>
+
+  <section class="roles">
+    <div class="role"><span class="kicker" style="color:var(--signal)">Security analyst</span><span>Reviews doubtful flows with the reasons, unusual measurements and similar past cases, then records a verdict.</span></div>
+    <div class="role"><span class="kicker" style="color:var(--machine)">Administrator</span><span>Replays traffic, verifies feedback, retrains, deploys or rolls back models, and reads the audit log.</span></div>
+  </section>
+
+  <div class="foot"><span>Python · PyTorch · scikit-learn · FastAPI · SQLite · React</span><span>Reference: de Nascimento &amp; Hou, <i>Safety</i> 11(4):120, 2025</span></div>
+</main>
+</body>
+</html>

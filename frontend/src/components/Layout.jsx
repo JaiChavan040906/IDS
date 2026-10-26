@@ -1,8 +1,10 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth'
+import { useFeatures } from '../features'
 
 export default function Layout() {
   const { user, logout } = useAuth()
+  const { warehouse } = useFeatures()
   const nav = useNavigate()
   return (
     <>
@@ -13,6 +15,7 @@ export default function Layout() {
             <NavLink to="/about">ABOUT</NavLink>
             <NavLink to="/analyst">ANALYST</NavLink>
             <NavLink to="/admin">ADMINISTRATION</NavLink>
+            {warehouse && <NavLink to="/warehouse">WAREHOUSE</NavLink>}
           </nav>
           <div className="spacer" />
           {user ? (

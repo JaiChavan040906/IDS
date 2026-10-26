@@ -22,6 +22,7 @@ for f in TMP.glob("test.db*"):
     f.unlink()
 os.environ["IDS_DB_URL"] = f"sqlite:///{(TMP / 'test.db').as_posix()}"
 os.environ["IDS_APP_CONFIG"] = str(TMP / "app.yaml")
+os.environ["IDS_WAREHOUSE"] = "1"   # warehouse tests need it on; one test switches it off
 
 
 def _make_bundle(path: Path):
@@ -73,6 +74,8 @@ def app_client():
     cfg["bundle_dir"] = str(bundles)
     cfg["replay_file"] = str(replay)
     cfg["replay"]["mode"] = "sequential"
+    cfg["uploads_dir"] = str(TMP / "uploads")
+    cfg["warehouse_path"] = str(TMP / "warehouse.db")
     cfg["retraining"].update(min_verified_feedback=4, base_train_rows=3000, epochs=1,
                              feedback_repeat=5, benchmark_max_rows=5000)
     (TMP / "app.yaml").write_text(yaml.safe_dump(cfg))

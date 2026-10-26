@@ -16,7 +16,7 @@ import os
 from datetime import datetime, timezone
 
 from sqlalchemy import (JSON, Boolean, DateTime, Float, ForeignKey, Integer, LargeBinary,
-                        String, Text, TypeDecorator, create_engine, event)
+                        String, Text, TypeDecorator, create_engine, event, inspect, text)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 DB_URL = os.environ.get("IDS_DB_URL", "sqlite:///data/ids.db")
@@ -107,7 +107,8 @@ class Alert(Base):
     status: Mapped[str] = mapped_column(String(16), default="open", index=True)  # open|resolved
     assigned_to: Mapped[str | None] = mapped_column(String(64), nullable=True)
     # EVALUATION ONLY - never returned by analyst endpoints, never used for prediction
-    hidden_label: Mapped[str] = mapped_column(String(32))
+    hidden_label: Mapped[str] = mapped_column(String(64))
+    source: Mapped[str] = mapped_column(String(32), default="test")   # which replay dataset
 
 
 class Feedback(Base):
@@ -171,9 +172,15 @@ class TrafficStat(Base):
     n_auto_alert: Mapped[int] = mapped_column(Integer)
     n_review: Mapped[int] = mapped_column(Integer)
     ms_per_flow: Mapped[float] = mapped_column(Float)
+    source: Mapped[str] = mapped_column(String(32), default="test")   # which replay dataset
     # evaluation only (hidden labels), for the admin's live-accuracy panel
     n_correct: Mapped[int] = mapped_column(Integer)
     n_missed_attacks: Mapped[int] = mapped_column(Integer)   # true attack, auto_benign
+    n_labelled: Mapped[int] = mapped_column(Integer, default=0)      # flows with a known label
+    n_attacks: Mapped[int] = mapped_column(Integer, default=0)       # true attacks
+    n_caught: Mapped[int] = mapped_column(Integer, default=0)        # true attacks alerted or reviewed
+    n_benign: Mapped[int] = mapped_column(Integer, default=0)        # truly benign
+    n_false_alarms: Mapped[int] = mapped_column(Integer, default=0)  # benign raised as auto_alert
 
 
 class AuditLog(Base):
@@ -204,7 +211,31 @@ SessionLocal = sessionmaker(engine, expire_on_commit=False)
 
 
 def init_db(eng=None):
-    Base.metadata.create_all(eng or engine)
+    eng = eng or engine
+    Base.metadata.create_all(eng)
+    _add_missing_columns(eng)
+
+
+def _add_missing_columns(eng):
+    """create_all() never alters existing tables, so columns added in later versions
+    are appended here (SQLite ALTER TABLE ADD COLUMN, with the model's default)."""
+    insp = inspect(eng)
+    with eng.begin() as conn:
+        for table in Base.metadata.sorted_tables:
+            have = {c["name"] for c in insp.get_columns(table.name)}
+            for col in table.columns:
+                if col.name in have:
+                    continue
+                ddl = f"ALTER TABLE {table.name} ADD COLUMN {col.name} {col.type.compile(eng.dialect)}"
+                default = getattr(col.default, "arg", None)
+                if isinstance(default, (int, float)):
+                    ddl += f" DEFAULT {default}"
+                elif isinstance(default, str):
+                    ddl += f" DEFAULT '{default}'"
+                conn.execute(text(ddl))
+                if table.name == "traffic_stats" and col.name == "n_labelled":
+                    # rows recorded before this column existed came from the labelled test split
+                    conn.execute(text("UPDATE traffic_stats SET n_labelled = n_flows"))
 
 
 def audit(db, username: str, action: str, target: str = "", **details):

@@ -14,14 +14,15 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from ids.api.db import ModelVersion, SessionLocal, User, audit, init_db
-from ids.api.routers import admin, analyst, auth
+from ids.api.db import DB_URL, ModelVersion, SessionLocal, User, audit, init_db
+from ids.api.routers import admin, analyst, auth, warehouse
 from ids.api.security import hash_password
 from ids.api.services.kr import KnowledgeRepository
 from ids.api.services.model_service import ModelService
 from ids.api.services.replay import ReplayService
 from ids.api.services.retrain import RetrainService
 from ids.data import load_config
+from ids.warehouse import EtlRunner
 
 APP_CONFIG = os.environ.get("IDS_APP_CONFIG", "configs/app.yaml")
 FRONTEND = Path("frontend/dist")
@@ -57,10 +58,20 @@ async def lifespan(app: FastAPI):
         db.close()
     ucfg = yaml.safe_load(open("configs/uncertainty.yaml", encoding="utf-8"))
     app.state.cfg = cfg
+    app.state.cfg_label_map = load_config()["label_map"]     # maps uploaded labels to our classes
     app.state.models = models
     app.state.kr = KnowledgeRepository(models)
     app.state.replay = ReplayService(cfg["replay_file"], models, cfg)
     app.state.retrain = RetrainService(models, cfg, load_config(), ucfg)
+    # Warehouse tab (DWM Module 1) on/off: IDS_WAREHOUSE=1/0 overrides configs/app.yaml.
+    # start_portal.bat leaves it off; start_portal_dwm.bat turns it on.
+    env = os.environ.get("IDS_WAREHOUSE")
+    app.state.warehouse_enabled = (env.strip() in {"1", "true", "yes", "on"} if env is not None
+                                   else bool(cfg.get("warehouse_enabled", False)))
+    dcfg = load_config()
+    app.state.etl = EtlRunner({"warehouse_path": cfg.get("warehouse_path", "data/warehouse.db"),
+                               "processed_dir": dcfg["processed_dir"], "raw_dir": dcfg["raw_dir"]},
+                              DB_URL.removeprefix("sqlite:///"), cfg.get("severity", {}))
     yield
     app.state.replay.stop()
 
@@ -69,11 +80,13 @@ app = FastAPI(title="HITL IDS", lifespan=lifespan)
 app.include_router(auth.router)
 app.include_router(analyst.router)
 app.include_router(admin.router)
+app.include_router(warehouse.router)
 
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "model": app.state.models.version}
+    return {"ok": True, "model": app.state.models.version,
+            "features": {"warehouse": app.state.warehouse_enabled}}
 
 
 @app.get("/api/public/summary")

@@ -17,6 +17,14 @@
 
 \newcommand{\todo}[1]{\textcolor{red}{[#1]}}
 
+
+% layout: slightly tighter float spacing so the paper fits on six pages
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
+\setlength{\dblfloatsep}{6pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{3pt}
+
 \begin{document}
 
 \title{Human-in-the-Loop Network Intrusion Detection with a Hybrid CNN-LSTM, Uncertainty-Aware Routing and Controlled Retraining}
@@ -44,7 +52,7 @@ Mahalanobis distance measured on the classifier's 128-dimensional embedding, and
 and agreement of a Random Forest acting as a second opinion. Analyst verdicts, with their stated
 reasons and evidence, are kept in a searchable incident store, and they influence the model only
 after an administrator has verified them and a retrained candidate has cleared thresholds declared
-before training began. We evaluate the prototype on the corrected release of CIC-IDS2017, after
+before training began. The prototype is evaluated on the corrected release of CIC-IDS2017, after
 removing identifier columns and collapsing 385,106 duplicated flows before the data were split.
 On 257,222 untouched test flows the deployed configuration forwards 1.48\% of traffic for review;
 that queue holds 98.9\% of the classifier's mistakes, and the traffic handled without a human is
@@ -52,7 +60,7 @@ labelled with 99.999\% accuracy, with two attack flows dismissed and no benign f
 Withholding one attack family at a time shows that the classifier's own confidence collapses on
 novel attacks (up to 97\% silently dismissed), whereas the combined router keeps such losses at
 or below 10.2\% for five of the six withheld families. Brute-force SSH logins escaped every
-configuration we tested.
+configuration tested.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -61,7 +69,7 @@ intrusion detection, human-in-the-loop, uncertainty estimation, CNN-LSTM, out-of
 
 %=====================================================================
 \section{Introduction}
-Our starting point was a simple observation from our own first experiments: a Random Forest
+This work starts from a simple observation made in early experiments: a Random Forest
 trained in a few minutes already scored 99.97\% on a random split of CIC-IDS2017. If a quick
 baseline can reach that figure, accuracy on such a split cannot be what separates a usable
 detector from an unusable one. Three things weaken numbers of this kind. Flow datasets carry
@@ -71,44 +79,44 @@ memorise rather than learn \cite{arp2022dos}. Above all, a deployed detector wil
 receive an attack family absent from its training data, and a softmax output gives no reliable
 signal when that happens \cite{sommer2010outside,hendrycks2017baseline}.
 
-Our design follows an uncertainty-aware adaptive IDS proposed in \cite{refpaper2025}, which pairs
+The present design follows an uncertainty-aware adaptive IDS proposed in \cite{refpaper2025}, which pairs
 a CNN-LSTM with cWGAN-GP augmentation and analyst feedback and reports 98\% binary accuracy,
-96.6\% detection rate, 92.1\% precision and 94.3\% F1. We rebuilt its classifier and turned the
-idea into a complete application. Rather than asking how accurate the classifier is, we ask a
+96.6\% detection rate, 92.1\% precision and 94.3\% F1. Its classifier is rebuilt here and the
+idea is turned into a complete application. Rather than asking how accurate the classifier is, this paper asks a
 more operational question: for which flows may the classifier act alone, and which ones must a
 person look at before anything is closed?
 
 The paper makes three contributions.
 \begin{enumerate}
-\item We compare the CNN-LSTM with Random Forest and LightGBM on the corrected CIC-IDS2017 data
+\item The CNN-LSTM is compared with Random Forest and LightGBM on the corrected CIC-IDS2017 data
 under strict leakage control (shortcut columns removed, duplicates collapsed before splitting,
 three seeds), together with ablations that remove the LSTM or add synthetic samples.
-\item Using withheld attack families and a split by capture day, we show that the network's own
-uncertainty overlooks most novel attacks, and we propose a combined routing rule (entropy,
+\item Using withheld attack families and a split by capture day, the network's own
+uncertainty is shown to overlook most novel attacks, and a combined routing rule is proposed (entropy,
 embedding distance, and a tree-ensemble second opinion) that sends most of them to an analyst.
-\item We implement the full loop as software: traffic replay, an analyst console that captures
+\item The full loop is implemented as software: traffic replay, an analyst console that captures
 the reason behind each verdict, an incident store with similarity search, and retraining that is
 gated by thresholds fixed in advance, administrator approval, live deployment and rollback.
 \end{enumerate}
 
 %=====================================================================
 \section{Related Work}
-Our system draws on four strands of earlier work: the benchmark data and its known defects,
+The proposed system draws on four strands of earlier work: the benchmark data and its known defects,
 classifiers for tabular flow records, ways of estimating when a classifier should not be
 trusted, and generative oversampling. Rather than restate each source, Table~\ref{tab:related}
-lists what we took from it and where our system departs from it.
+lists what was taken from it and where the proposed system departs from it.
 
 \begin{table*}[t]
 \caption{Prior work used in this system}
 \label{tab:related}
 \centering
 \footnotesize
-\begin{tabular}{p{2.6cm}p{6.2cm}p{7.6cm}}
+\begin{tabular}{p{1.6cm}p{6.9cm}p{8.35cm}}
 \toprule
-Source & Idea relevant to us & How this project uses or extends it \\
+Source & Relevant idea & How this project uses or extends it \\
 \midrule
-\cite{sharafaldin2018toward} & Five-day labelled flow capture (CIC-IDS2017) & Our only training and test source \\
-\cite{engelen2021troubleshooting,liu2022error} & Flow and label errors found; corrected release published & We use the corrected files and add our own de-duplication before splitting \\
+\cite{sharafaldin2018toward} & Five-day labelled flow capture (CIC-IDS2017) & Sole training and test source \\
+\cite{engelen2021troubleshooting,liu2022error} & Flow and label errors found; corrected release published & Corrected files used, with additional de-duplication before splitting \\
 \cite{arp2022dos} & Leakage, shortcuts and weak baselines distort security ML & Identifier columns and destination port dropped; tree baselines on identical inputs \\
 \cite{sommer2010outside} & Real networks are open-world; unseen activity is the norm & Motivates withholding whole attack families during evaluation \\
 \cite{refpaper2025} & CNN-LSTM, cWGAN-GP and analyst feedback for adaptive IDS & Classifier rebuilt; feedback loop made controlled, verified and reversible \\
@@ -128,14 +136,14 @@ Source & Idea relevant to us & How this project uses or extends it \\
 \section{Dataset and Preprocessing}
 All experiments use the corrected CIC-IDS2017 files \cite{engelen2021troubleshooting,liu2022error},
 one file per capture day from Monday to Friday. Together they hold 2,099,976 flow records, 91
-columns and 27 distinct label strings. Our inspection script found no empty cells and only five
+columns and 27 distinct label strings. An inspection script found no empty cells and only five
 records with infinite byte- or packet-rate values. No two rows were identical as stored, yet once
 the identifier columns were set aside, one row in eight (12.5\%) turned out to be a repeat.
 
 \textit{Columns removed.} Flow ID, both IP addresses, the source port, the timestamp and the row
 counter describe \emph{who} talked, not \emph{how}, so the model never sees them. The corrected
 release adds an ``Attempted Category'' column that is only filled for attack rows; it would hand
-the answer to the model and is discarded as well. We also leave out the destination port: in this
+the answer to the model and is discarded as well. The destination port is also left out: in this
 capture, port 21 is almost synonymous with FTP-Patator, which a model could exploit without
 learning anything about the attack itself.
 
@@ -144,7 +152,7 @@ its parent attack. The \textit{Infiltration--Portscan} label is folded into \tex
 since the two are indistinguishable in feature space, and brute-force, XSS and SQL-injection web
 attacks form one ``Web Attack'' class. The result is 13 classes. Heartbleed (11 records) and
 Infiltration (81 records) are kept but flagged: their per-class scores rest on a handful of test
-flows, so we also report a ``reliable'' macro-F1 computed without them.
+flows, so a ``reliable'' macro-F1, computed without them, is also reported.
 
 \textit{Removing repeats before the split.} Rows that agree on every input feature and on the
 label are reduced to one copy, which removes 385,106 rows; a further 58 rows whose identical
@@ -196,6 +204,7 @@ Total & 1,200,368 & 257,222 & 257,222 \\
 
 \begin{figure*}[t]
 \centering
+\resizebox{0.88\textwidth}{!}{%
 \begin{tikzpicture}[
   box/.style={draw, rounded corners=2pt, align=center, font=\footnotesize, minimum height=9mm, inner sep=3pt, fill=blue!4},
   hum/.style={box, fill=orange!10},
@@ -220,7 +229,7 @@ Total & 1,200,368 & 257,222 & 257,222 \\
 \draw[arr] (admin) -- (retrain);
 \draw[arr] (retrain.north) |- ++(0,4mm) -| node[lab, above, pos=0.25]{new model version (deploy / rollback)} (cnn.north);
 \draw[arr, dashed] (kr.south) |- ++(0,-5mm) -| node[lab, below, pos=0.25]{similar past incidents} (analyst.south);
-\end{tikzpicture}
+\end{tikzpicture}}
 \caption{System overview. Only uncertain flows reach the analyst; verified analyst decisions
 improve the model only through administrator-approved retraining.}
 \label{fig:system}
@@ -230,33 +239,33 @@ improve the model only through administrator-approved retraining.}
 The layer sequence is taken from Table 5 of \cite{refpaper2025}, with 64 inputs instead of 46.
 The standardised feature vector is read as a single-channel signal of length 64 and passes through
 a 64-filter convolution (kernel 5, ReLU), max-pooling by two, a 128-filter convolution (kernel 3,
-ReLU), an LSTM with 128 units, dropout of 0.3 and a 13-way linear output. We keep the last LSTM
-state $\mathbf{z}\in\mathbb{R}^{128}$ as an embedding of the flow, since later stages measure
+ReLU), an LSTM with 128 units, dropout of 0.3 and a 13-way linear output. The last LSTM
+state $\mathbf{z}\in\mathbb{R}^{128}$ serves as an embedding of the flow, since later stages measure
 distances in that space. Training uses ordinary cross-entropy with AdamW (learning rate
 $10^{-3}$, batches of 1,024, cosine decay), up to 20 epochs, and keeps the epoch with the best
-validation macro-F1. We avoided class-weighted loss because it shifts the predicted probabilities
-that the routing stage relies on. Our first runs, however, never once predicted Heartbleed or
+validation macro-F1. Class-weighted loss was avoided because it shifts the predicted probabilities
+that the routing stage relies on. The first runs, however, never once predicted Heartbleed or
 Infiltration, which held validation macro-F1 near 0.85; copying the rows of any class with fewer
 than 1,000 training examples until it reaches that count (training partition only) fixed this.
 
 \subsection{Baselines and ablations}
 A 100-tree Random Forest and a LightGBM model receive exactly the same 64 transformed inputs.
-LightGBM stops early on validation loss; in our first attempt it diverged after 12 boosting
+LightGBM stops early on validation loss; in the first attempt it diverged after 12 boosting
 rounds, which a cap on leaf output values resolved. Three ablations probe the design: replacing
 the LSTM with global average pooling, adding GAN-generated minority samples, and skipping
 temperature scaling.
 
 \subsection{Minority augmentation}
-For the augmentation ablation we train a class-conditional Wasserstein GAN with gradient penalty
-\cite{mirza2014conditional,gulrajani2017improved}. Generator and critic each have two hidden layers
+For the augmentation ablation, a class-conditional Wasserstein GAN with gradient penalty
+\cite{mirza2014conditional,gulrajani2017improved} is trained. Generator and critic each have two hidden layers
 of 256 units; the penalty weight is 10 and the critic is updated five times per generator update.
 Only classes with between 100 and 5,000 training rows are topped up, to 5,000 rows each. A
 generated row is accepted only when the baseline Random Forest assigns it to the class it was
-generated for. The reference design seeds its generator with a VAE; ours starts from Gaussian
+generated for. The reference design seeds its generator with a VAE; the one used here starts from Gaussian
 noise.
 
 \subsection{Calibration and uncertainty signals}
-We cut the validation partition into two stratified halves. The first (``calibration'') half is
+The validation partition is cut into two stratified halves. The first (``calibration'') half is
 used to fit everything in this subsection; the second (``evaluation'') half is reserved for
 judging the result. A single temperature $T$ \cite{guo2017calibration} rescales the logits, after
 which every flow receives two scores:
@@ -294,7 +303,7 @@ Forest's. The forest's own doubt is $u_{\mathrm{RF}} = 1-\max_k p^{\mathrm{RF}}_
 share of trees that did not vote for the winning class, and $\tau_{\mathrm{RF}}$ flags its most
 doubtful 0.5\% of calibration flows. In words: a flow is closed or escalated automatically only
 when the network is decisive, the flow lies close to familiar traffic, and an independently
-trained forest is both confident and in agreement. We introduced the two forest terms only after
+trained forest is both confident and in agreement. The two forest terms were introduced only after
 the withheld-family experiment (Section~\ref{sec:loao}) exposed how often the network alone
 dismissed novel attacks. That experiment therefore cannot count as independent evidence for the
 combined rule; the test partition, opened once and only after the rule was frozen, can.
@@ -331,7 +340,7 @@ the model in memory while the service keeps running, and each step is recorded i
 %=====================================================================
 \section{Experimental Setup}
 Models are fitted on the training partition, and every choice of settings or design was made by
-looking at validation results only. We opened the test partition a single time, once the routing
+looking at validation results only. The test partition was opened a single time, once the routing
 rule and all settings were frozen. Each model was trained with three seeds (42, 7 and 2025), and
 tables give the mean and standard deviation across them; the deployed application uses the seed-42
 network and forest. ``Accuracy'' counts a prediction as correct only if the exact one of 13
@@ -341,10 +350,10 @@ Everything ran on a laptop with an Intel Core i5-1240P, 7.7\,GB of RAM and an NV
 (4\,GB), using PyTorch \cite{paszke2019pytorch} and scikit-learn \cite{pedregosa2011scikit}.
 
 \textit{Generalisation tests.} Two further experiments use only training and validation rows.
-(i) \emph{Withheld family:} for each of six attacks we delete every row of that attack from the
-data used for training and calibration, refit the whole chain with one seed (eight CNN-LSTM epochs,
-temperature, cut-offs and forest), and then record what the router does with that attack's flows.
-(ii) \emph{Split by day:} we fit on Monday to Wednesday traffic and evaluate on Thursday and
+(i) \emph{Withheld family:} for each of six attacks, every row of that attack is deleted from the
+data used for training and calibration, the whole chain is refitted with one seed (eight CNN-LSTM epochs,
+temperature, cut-offs and forest), and the router's handling of that attack's flows is recorded.
+(ii) \emph{Split by day:} models are fitted on Monday to Wednesday traffic and evaluated on Thursday and
 Friday, whose attack types never occur earlier in the week.
 
 %=====================================================================
@@ -352,10 +361,10 @@ Friday, whose attack types never occur earlier in the week.
 
 \subsection{Classification on the held-out test set}
 Table~\ref{tab:main} sets every model beside the figures published for the reference design. All
-five of our models, the rebuilt CNN-LSTM included, score above those figures on every binary
-metric. We do not read this as an improvement on that work: the data release, the duplicate
+five models trained in this work, the rebuilt CNN-LSTM included, score above those figures on every binary
+metric. This is not read as an improvement on that work: the data release, the duplicate
 handling and the removed columns all differ, and such choices alone are known to move results a
-great deal \cite{engelen2021troubleshooting,arp2022dos}. Within our own comparison the tree
+great deal \cite{engelen2021troubleshooting,arp2022dos}. Within the present comparison the tree
 ensembles come out ahead. The Random Forest reaches 99.23\% reliable macro-F1 against the
 CNN-LSTM's 98.09\%, and raises roughly a third as many false alarms (FPR 0.020\% vs.\ 0.059\%).
 
@@ -376,7 +385,7 @@ Macro-F1 (13 classes) & -- & \textbf{99.07} $\pm$ 0.22 & 98.32 $\pm$ 0.04 & 96.7
 Macro-F1 (reliable) & -- & \textbf{99.23} $\pm$ 0.02 & 99.03 $\pm$ 0.05 & 98.09 $\pm$ 0.99 & 98.47 $\pm$ 0.25 & 96.39 $\pm$ 0.32 \\
 FPR & -- & \textbf{0.020} $\pm$ 0.000 & 0.033 $\pm$ 0.003 & 0.059 $\pm$ 0.015 & 0.054 $\pm$ 0.005 & 0.062 $\pm$ 0.002 \\
 \bottomrule
-\multicolumn{7}{l}{$^\ast$Binary accuracy in \cite{refpaper2025}; ours is 13-class accuracy. ``Reliable'' excludes Heartbleed and Infiltration.}
+\multicolumn{7}{l}{$^\ast$Binary accuracy in \cite{refpaper2025}; the accuracy reported here is 13-class. ``Reliable'' excludes Heartbleed and Infiltration.}
 \end{tabular}
 \end{table*}
 
@@ -455,7 +464,7 @@ Benign auto-alerted & 0 & 0 \\
 \subsection{Unseen attacks: leave-one-attack-out}
 \label{sec:loao}
 For each withheld family, Fig.~\ref{fig:loao} plots the fraction of its flows that the router
-closed as benign, i.e.\ the attacks nobody would ever have seen. Our first pass of this experiment
+closed as benign, i.e.\ the attacks nobody would ever have seen. The first pass of this experiment
 is what changed the design: relying on its own two scores, the network dismissed 80.5\% of the
 unseen Portscan flows and 32.9\% of the unseen Botnet flows, while a Random Forest that only looked
 at how its trees split their votes dismissed 5.3\% and 10.8\%. The network also behaved
@@ -468,7 +477,7 @@ sessions.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{figs/loao_missed.pdf}
+\includegraphics[width=0.68\columnwidth]{figs/loao_missed.pdf}
 \caption{Leave-one-attack-out: share of the held-out attack's flows auto-closed as benign
 (lower is better). Each group retrains the full pipeline without that attack.}
 \label{fig:loao}
@@ -485,7 +494,7 @@ closed unseen.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{figs/day_missed.pdf}
+\includegraphics[width=0.68\columnwidth]{figs/day_missed.pdf}
 \caption{Day-based split (train Monday--Wednesday, evaluate Thursday--Friday): share of each
 unseen attack class auto-closed as benign.}
 \label{fig:day}
@@ -500,7 +509,7 @@ audit log. The same test confirms that no analyst-facing response ever contains 
 
 %=====================================================================
 \section{Discussion}
-\textit{What the numbers do and do not show.} With leakage removed, every model we trained passes
+\textit{What the numbers do and do not show.} With leakage removed, every trained model passes
 99.7\% binary F1 on a random split, and the forest edges out the network. On such a split the
 contest is effectively over before it starts; the differences that matter for an operator only
 appear when the traffic contains something the model has not met before.
@@ -511,9 +520,9 @@ to pair it with a model built on entirely different principles and to send their
 a person. This is in line with earlier evidence that several independent models express doubt
 more reliably than one network does \cite{lakshminarayanan2017simple}.
 
-\textit{Caveats.} The combined rule was chosen after we had seen the withheld-family results, so
+\textit{Caveats.} The combined rule was chosen after the withheld-family results had been seen, so
 those results flatter it. The test partition was used only once, but it contains no attack type
-that the models had not met in training. Each withheld family was run with a single seed. Our
+that the models had not met in training. Each withheld family was run with a single seed. The
 comparison with the reference paper differs in data release and preprocessing. The two classes
 with fewer than 100 records cannot be scored meaningfully. Finally, the analyst workflow was
 exercised by the authors rather than by working security staff.
@@ -528,7 +537,7 @@ Login and access control in the prototype are simulated.
 %=====================================================================
 \section{Conclusion}
 This work set out to build an intrusion detector that knows when to hand a decision to a person.
-Under careful leakage control, our CNN-LSTM comes close to strong tree baselines and scores above
+Under careful leakage control, the CNN-LSTM comes close to strong tree baselines and scores above
 the figures published for the reference design, yet its own sense of uncertainty breaks down on
 attacks it has never met. Adding a Random Forest as a second opinion fixes most of that: only
 1.48\% of traffic needs a human, that share contains 98.9\% of the network's errors, and most
@@ -542,7 +551,7 @@ how the system copes with a different network.
 The authors are grateful to Prof. Divya Nimbalkar for her guidance, review and encouragement
 throughout this project, and to the Department of Computer Engineering, Vidyalankar Institute of
 Technology, Mumbai, for providing the laboratory facilities and computing resources used in this
-work. We also thank the maintainers of the corrected CIC-IDS2017 dataset for making it publicly
+work. The authors also thank the maintainers of the corrected CIC-IDS2017 dataset for making it publicly
 available.
 
 %=====================================================================

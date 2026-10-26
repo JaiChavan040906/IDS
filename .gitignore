@@ -1,11 +1,10 @@
 .venv/
 __pycache__/
 *.egg-info/
-data/raw/
-data/processed/
-data/ids.db*
 artifacts/
 .pytest_tmp/
 .pytest_cache/
 frontend/node_modules/
 frontend/dist/
+# local data: datasets, portal/warehouse databases, backups, uploads (never pushed)
+data/

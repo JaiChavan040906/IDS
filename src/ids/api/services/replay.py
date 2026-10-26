@@ -1,23 +1,32 @@
-"""Stage 7 - traffic replay: streams the untouched TEST split through the active model.
+"""Stage 7 - traffic replay: streams flows through the active model.
+
+Traffic sources:
+  "test"       the untouched TEST split of CIC-IDS2017 (built in)
+  <dataset id> a CSV the admin uploaded (see ids.flow_import), e.g. CSE-CIC-IDS2018
+               or traffic captured on another network
 
 Each tick scores `batch_size` flows. auto_benign flows are only counted
 (traffic_stats); auto_alert and review flows are stored as alerts.
 
 The hidden label travels with the flow ONLY so the admin can measure live
 accuracy. It is never passed to the model and never shown to the analyst.
+Uploaded files may have no labels at all; then only the routing is measured.
 """
 
 import threading
 import time
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from ids.api.db import Alert, SessionLocal, TrafficStat
+from ids.flow_import import UNLABELLED, list_datasets
 from ids.uncertainty import AUTO_BENIGN, REVIEW
 
 CONTEXT_COLS = ["day", "row_id", "Timestamp", "Src IP", "Src Port", "Dst IP", "Dst Port",
                 "Protocol", "hidden_label"]
+TEST_SOURCE = "test"
 
 
 def severity_for(pred_class: str, decision: str, cfg: dict) -> str:
@@ -28,29 +37,59 @@ def severity_for(pred_class: str, decision: str, cfg: dict) -> str:
     return base
 
 
+def _int(v, default=0) -> int:
+    try:
+        return int(v) if pd.notna(v) else default
+    except (TypeError, ValueError):
+        return default
+
+
 class ReplayService:
     def __init__(self, replay_file: str, models, app_cfg: dict):
         self.models = models
         self.cfg = dict(app_cfg["replay"])
         self.severity_cfg = app_cfg["severity"]
-        self.df = pd.read_parquet(replay_file)
-        self.labels = self.df["hidden_label"].astype(str).to_numpy()
-        self._order = self._make_order()
-        self.position = 0
+        self.replay_file = replay_file
+        self.uploads_dir = Path(app_cfg.get("uploads_dir", "data/uploads"))
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
         self.last_error: str | None = None
         self.processed = 0
+        self.load_source(TEST_SOURCE)
+
+    # ---- sources ----
+    def datasets(self) -> list[dict]:
+        built_in = {"id": TEST_SOURCE, "name": "CIC-IDS2017 test split (built in)",
+                    "rows_kept": None, "labelled": True, "built_in": True}
+        return [built_in] + list_datasets(self.uploads_dir)
+
+    def load_source(self, source: str):
+        if source == TEST_SOURCE:
+            df, name = pd.read_parquet(self.replay_file), "CIC-IDS2017 test split (built in)"
+        else:
+            meta = next((m for m in list_datasets(self.uploads_dir) if m["id"] == source), None)
+            if meta is None:
+                raise ValueError(f"Unknown traffic source: {source}")
+            df, name = pd.read_parquet(self.uploads_dir / f"{source}.parquet"), meta["name"]
+        self.df = df
+        self.labels = df["hidden_label"].astype(str).to_numpy()
+        self.labelled = bool((self.labels != UNLABELLED).any())
+        self.source, self.source_name = source, name
+        if not self.labelled and self.cfg["mode"] == "attack_mix":
+            self.cfg["mode"] = "sequential"     # attack mix needs to know which flows are attacks
+        self._order, self.position = self._make_order(), 0
 
     # ---- ordering ----
     def _make_order(self) -> np.ndarray:
         n = len(self.df)
-        if self.cfg["mode"] == "sequential":
+        if self.cfg["mode"] == "sequential" or not self.labelled:
             return np.arange(n)
         # attack_mix: shuffle, then keep attacks at ~attack_share of the stream
         rng = np.random.default_rng(self.cfg["seed"])
-        attack = np.nonzero(self.labels != "BENIGN")[0]
+        attack = np.nonzero((self.labels != "BENIGN") & (self.labels != UNLABELLED))[0]
         benign = np.nonzero(self.labels == "BENIGN")[0]
+        if len(attack) == 0 or len(benign) == 0:
+            return np.arange(n)
         share = self.cfg["attack_share"]
         n_benign = min(len(benign), int(len(attack) * (1 - share) / share))
         order = np.concatenate([attack, rng.choice(benign, n_benign, replace=False)])
@@ -68,14 +107,18 @@ class ReplayService:
                 "batch_size": self.cfg["batch_size"],
                 "interval_seconds": self.cfg["interval_seconds"],
                 "attack_share": self.cfg.get("attack_share"), "last_error": self.last_error,
-                "model_version": self.models.version}
+                "source": self.source, "source_name": self.source_name,
+                "labelled": self.labelled, "model_version": self.models.version}
 
     def configure(self, **kw):
         was_running = self.running
         self.stop()
+        source = kw.pop("source", None)
         mode_changed = "mode" in kw and kw["mode"] != self.cfg["mode"]
         self.cfg.update({k: v for k, v in kw.items() if v is not None})
-        if mode_changed or "attack_share" in kw:
+        if source and source != self.source:
+            self.load_source(source)
+        elif mode_changed or "attack_share" in kw:
             self._order, self.position = self._make_order(), 0
         if was_running:
             self.start()
@@ -127,6 +170,9 @@ class ReplayService:
         dec = s["decision"]
         feats = batch[det.pre.candidate_cols]
         ctx = batch[CONTEXT_COLS]
+        labelled = truth != UNLABELLED
+        attack = labelled & (truth != "BENIGN")
+        benign = truth == "BENIGN"
 
         db = SessionLocal()
         try:
@@ -135,12 +181,13 @@ class ReplayService:
                 r = ctx.iloc[j]
                 f = {k: (None if not np.isfinite(v) else float(v))
                      for k, v in feats.iloc[j].items()}
+                ts = pd.Timestamp(r["Timestamp"])
                 db.add(Alert(
-                    flow_day=str(r["day"]), flow_row_id=int(r["row_id"]),
-                    flow_time=pd.Timestamp(r["Timestamp"]).to_pydatetime(),
-                    src_ip=str(r["Src IP"]), src_port=int(r["Src Port"]),
-                    dst_ip=str(r["Dst IP"]), dst_port=int(r["Dst Port"]),
-                    protocol=int(r["Protocol"]), features=f,
+                    flow_day=str(r["day"]), flow_row_id=_int(r["row_id"]),
+                    flow_time=None if pd.isna(ts) else ts.to_pydatetime(),
+                    src_ip=str(r["Src IP"]), src_port=_int(r["Src Port"]),
+                    dst_ip=str(r["Dst IP"]), dst_port=_int(r["Dst Port"]),
+                    protocol=_int(r["Protocol"]), features=f,
                     embedding=s["embedding"][j].astype("float32").tobytes(),
                     model_version=det.version, predicted_class=info["predicted_class"],
                     confidence=info["confidence"], entropy=info["entropy"],
@@ -149,14 +196,18 @@ class ReplayService:
                     second_opinion=info["second_opinion"],
                     severity=severity_for(info["predicted_class"], info["decision"],
                                           self.severity_cfg),
-                    hidden_label=str(truth[j])))
+                    hidden_label=str(truth[j]), source=self.source))
             db.add(TrafficStat(
-                model_version=det.version, n_flows=len(idx),
+                model_version=det.version, source=self.source, n_flows=len(idx),
                 n_auto_benign=int((dec == AUTO_BENIGN).sum()),
                 n_auto_alert=int((dec == "auto_alert").sum()),
                 n_review=int((dec == REVIEW).sum()), ms_per_flow=ms,
-                n_correct=int((pred_names == truth).sum()),
-                n_missed_attacks=int(((truth != "BENIGN") & (dec == AUTO_BENIGN)).sum())))
+                n_correct=int((labelled & (pred_names == truth)).sum()),
+                n_missed_attacks=int((attack & (dec == AUTO_BENIGN)).sum()),
+                n_labelled=int(labelled.sum()), n_attacks=int(attack.sum()),
+                n_caught=int((attack & (dec != AUTO_BENIGN)).sum()),
+                n_benign=int(benign.sum()),
+                n_false_alarms=int((benign & (dec == "auto_alert")).sum())))
             db.commit()
         finally:
             db.close()

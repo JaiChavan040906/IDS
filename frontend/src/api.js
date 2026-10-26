@@ -36,6 +36,20 @@ export async function api(path, { method = 'GET', body, params } = {}) {
   return data
 }
 
+// Upload one file as multipart form data (the browser sets the boundary header itself).
+export async function apiUpload(path, file) {
+  const form = new FormData()
+  form.append('file', file)
+  const res = await fetch(`/api${path}`, {
+    method: 'POST',
+    headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},
+    body: form,
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(typeof data.detail === 'string' ? data.detail : res.statusText)
+  return data
+}
+
 // Formatting helpers used across pages
 export const pct = (x, d = 2) => (x === null || x === undefined ? '–' : `${(100 * x).toFixed(d)}%`)
 export const num = (x) => (x === null || x === undefined ? '–' : Number(x).toLocaleString())

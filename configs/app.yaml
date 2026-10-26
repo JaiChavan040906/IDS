@@ -2,6 +2,22 @@
 bundle_dir: artifacts/bundles
 initial_bundle: v1                 # registered as the active model on first start
 replay_file: data/processed/replay.parquet
+# Uploaded traffic CSVs (Admin -> Overview -> Traffic source). Large files are randomly
+# sampled down to import_max_rows to keep memory use safe on a laptop.
+uploads_dir: data/uploads
+import_max_rows: 300000
+
+# Data warehouse for analysis (Warehouse tab, DWM Module 1). Built by the ETL job from the
+# cleaned dataset, the raw timestamps and this portal's database. Never used by the model.
+warehouse_path: data/warehouse.db
+# Show the WAREHOUSE tab? Off by default (start_portal.bat); start_portal_dwm.bat turns it on
+# with IDS_WAREHOUSE=1. Turning it off hides the tab, its API and its audit entries; nothing is deleted.
+warehouse_enabled: false
+
+# Presentation helper on Admin -> Retraining: one click adds clearly marked "demo"
+# decisions (they accept the model's own prediction, never the hidden label) so the
+# 20-decision retraining threshold can be shown live. Set to false for a real deployment.
+demo_tools: true
 
 replay:
   batch_size: 50                   # flows scored per tick

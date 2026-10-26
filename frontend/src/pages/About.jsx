@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { api, pct } from '../api'
 import { useApi } from '../components/ui'
+import { SERIES, SplitBar, useVisual } from '../components/charts'
 import { useAuth } from '../auth'
 
 const STEPS = [
@@ -23,6 +24,8 @@ export default function About() {
   const { user } = useAuth()
   const { data } = useApi(() => api('/public/summary'))
   const m = data?.metrics
+  const visual = useVisual()
+  const r = data?.routing?.referral_rate
   return (
     <>
       <section className="hero">
@@ -52,6 +55,13 @@ export default function About() {
             <div className="card"><span className="kicker">False alarms</span><div className="big-num">{m ? pct(m.binary?.fpr, 3) : '–'}</div><p className="muted small">of benign flows flagged</p></div>
             <div className="card"><span className="kicker">Sent to analyst</span><div className="big-num">{data?.routing ? pct(data.routing.referral_rate, 1) : '–'}</div><p className="muted small">the rest is handled automatically</p></div>
           </div>
+          {visual && r !== undefined && (
+            <div className="card" style={{ marginTop: 16 }}>
+              <SplitBar title="How traffic is handled (validation set)" format={(v) => `${(100 * v).toFixed(2)}%`}
+                parts={[{ label: 'Handled automatically', value: 1 - r, color: SERIES[0] },
+                  { label: 'Sent to the analyst', value: r, color: SERIES[1] }]} />
+            </div>
+          )}
           <p className="faint small" style={{ marginTop: 12, textAlign: 'center' }}>
             Active model {data?.model_version || '–'} · Improved CIC-IDS2017 (Engelen et al.) · numbers from the held-out validation set
           </p>

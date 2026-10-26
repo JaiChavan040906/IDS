@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom'
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api, num, pct } from '../../api'
 import { ErrorBox, Stat, useApi } from '../../components/ui'
+import { BarList, SERIES, SplitBar, useVisual } from '../../components/charts'
 
 const WINDOWS = [[15, '15 min'], [60, '1 hour'], [1440, '24 hours']]
 const tooltipStyle = { background: '#0e141d', border: '1px solid #2a3747', borderRadius: 10, fontSize: 12 }
 
 export default function Dashboard() {
   const [minutes, setMinutes] = useState(60)
+  const visual = useVisual()
   const { data, error } = useApi(() => api('/stats/overview', { params: { minutes } }), [minutes], 5000)
   const byClass = Object.entries(data?.alerts_by_class || {})
     .map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count)
@@ -30,6 +32,14 @@ export default function Dashboard() {
         <Stat label="Confident alerts" value={num(data?.auto_alert)} sub={data?.flows ? pct(data.auto_alert / data.flows, 1) : ''} />
         <Stat label="Sent to review" value={num(data?.review)} sub={data?.flows ? pct(data.review / data.flows, 1) : ''} />
       </div>
+      {visual && data?.flows > 0 && (
+        <div className="card">
+          <SplitBar title="Where the scored flows went" parts={[
+            { label: 'Auto-closed benign', value: data.auto_benign, color: SERIES[0] },
+            { label: 'Confident alerts', value: data.auto_alert, color: SERIES[1] },
+            { label: 'Sent to review', value: data.review, color: SERIES[2] }]} />
+        </div>
+      )}
       <div className="grid g3">
         <div className="card span2">
           <div className="card-head"><h3>Traffic</h3><span className="faint small">flows / alerts / review per interval</span></div>
@@ -58,6 +68,12 @@ export default function Dashboard() {
               ))}
             </tbody>
           </table>
+          {visual && (
+            <div className="viz-card">
+              <BarList title="Open items by severity (review + alerts)" color={SERIES[1]}
+                items={['high', 'medium', 'low'].map((s) => ({ label: s, value: sev('review', s) + sev('auto_alert', s) }))} />
+            </div>
+          )}
           <div className="row" style={{ marginTop: 16 }}>
             <Link className="btn primary sm" to="/analyst/review">Open review queue</Link>
           </div>

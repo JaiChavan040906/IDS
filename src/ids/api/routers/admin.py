@@ -1,12 +1,14 @@
 """Administrator endpoints (Stage 10) + retraining control (Stage 11)."""
 
 import os
+import shutil
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Literal
 
 import psutil
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy import func
 
@@ -15,6 +17,8 @@ from ids.api.db import (Alert, AuditLog, Feedback, KREntry, ModelVersion, Retrai
 from ids.api.routers.analyst import feedback_out
 from ids.api.routers.auth import user_out
 from ids.api.security import admin_only, get_db, hash_password
+from ids.api.services import demo
+from ids.flow_import import UNLABELLED, import_flows
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 STARTED = time.time()
@@ -173,7 +177,36 @@ def retrain_jobs(request: Request, admin: User = Depends(admin_only), db=Depends
     return {"busy": svc.busy,
             "usable_feedback": len(usable_feedback(db, request.app.state.models.detector.enc.classes)),
             "config": svc.cfg,
+            "demo_tools": request.app.state.cfg.get("demo_tools", True),
+            "demo_decisions": demo.count_demo(db),
             "jobs": [job_out(j) for j in db.query(RetrainJob).order_by(RetrainJob.id.desc())]}
+
+
+# ---------------- presentation helper (see services/demo.py) ----------------
+class DemoSeedIn(BaseModel):
+    count: int = Field(default=19, ge=1, le=200)
+    verified: bool = True
+
+
+def _demo_enabled(request: Request):
+    if not request.app.state.cfg.get("demo_tools", True):
+        raise HTTPException(403, "Demo tools are switched off (demo_tools: false in configs/app.yaml)")
+
+
+@router.post("/demo/feedback")
+def demo_seed(body: DemoSeedIn, request: Request, admin: User = Depends(admin_only),
+              db=Depends(get_db)):
+    _demo_enabled(request)
+    try:
+        return demo.seed_feedback(db, body.count, body.verified, admin.username)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+@router.delete("/demo/feedback")
+def demo_remove(request: Request, admin: User = Depends(admin_only), db=Depends(get_db)):
+    _demo_enabled(request)
+    return demo.remove_demo(db, admin.username)
 
 
 @router.post("/retrain")
@@ -228,13 +261,31 @@ def verify(fb_id: int, body: VerifyIn, admin: User = Depends(admin_only), db=Dep
 
 # ---------------- audit, health, replay, evaluation ----------------
 @router.get("/audit")
-def audit_log(limit: int = 200, action: str | None = None, admin: User = Depends(admin_only),
-              db=Depends(get_db)):
+def audit_log(request: Request, limit: int = 200, action: str | None = None,
+              admin: User = Depends(admin_only), db=Depends(get_db)):
     q = db.query(AuditLog)
+    if not getattr(request.app.state, "warehouse_enabled", False):
+        q = q.filter(~AuditLog.action.startswith("warehouse."))   # hidden, not deleted
     if action:
         q = q.filter(AuditLog.action.startswith(action))
     return [{k: getattr(a, k) for k in ("id", "ts", "username", "action", "target", "details")}
             for a in q.order_by(AuditLog.id.desc()).limit(min(limit, 1000))]
+
+
+class FeaturesIn(BaseModel):
+    warehouse: bool
+
+
+@router.post("/features")
+def set_features(body: FeaturesIn, request: Request, admin: User = Depends(admin_only),
+                 db=Depends(get_db)):
+    """Admin on/off switch for the Warehouse tab. Lasts until the portal restarts; every start
+    begins with the mode chosen by the start file (start_portal.bat = off)."""
+    request.app.state.warehouse_enabled = body.warehouse
+    # named warehouse.* so it is hidden from the audit list while the warehouse is off
+    audit(db, admin.username, "warehouse.switch", "on" if body.warehouse else "off")
+    db.commit()
+    return {"features": {"warehouse": request.app.state.warehouse_enabled}}
 
 
 @router.get("/health")
@@ -265,6 +316,7 @@ class ReplayIn(BaseModel):
     batch_size: int | None = Field(default=None, ge=1, le=2000)
     interval_seconds: float | None = Field(default=None, ge=0.1, le=60)
     attack_share: float | None = Field(default=None, gt=0, lt=1)
+    source: str | None = None
 
 
 @router.get("/replay")
@@ -283,7 +335,10 @@ def replay_control(body: ReplayIn, request: Request, admin: User = Depends(admin
     elif body.action == "reset":
         r.reset()
     else:
-        r.configure(**body.model_dump(exclude={"action"}, exclude_none=True))
+        try:
+            r.configure(**body.model_dump(exclude={"action"}, exclude_none=True))
+        except ValueError as e:
+            raise HTTPException(400, str(e))
     audit(db, admin.username, f"replay.{body.action}", "",
           **body.model_dump(exclude={"action"}, exclude_none=True))
     db.commit()
@@ -291,29 +346,99 @@ def replay_control(body: ReplayIn, request: Request, admin: User = Depends(admin
 
 
 @router.get("/evaluation")
-def evaluation(admin: User = Depends(admin_only), db=Depends(get_db)):
+def evaluation(request: Request, admin: User = Depends(admin_only), db=Depends(get_db)):
     """EVALUATION ONLY: compares model and analysts against the hidden labels."""
-    per_version = (db.query(TrafficStat.model_version, func.sum(TrafficStat.n_flows),
-                            func.sum(TrafficStat.n_correct), func.sum(TrafficStat.n_review),
-                            func.sum(TrafficStat.n_missed_attacks))
-                   .group_by(TrafficStat.model_version).all())
+    T = TrafficStat
+    per = (db.query(T.source, T.model_version, func.sum(T.n_flows), func.sum(T.n_labelled),
+                    func.sum(T.n_correct), func.sum(T.n_review), func.sum(T.n_missed_attacks),
+                    func.sum(T.n_attacks), func.sum(T.n_caught), func.sum(T.n_benign),
+                    func.sum(T.n_false_alarms))
+           .group_by(T.source, T.model_version).all())
+    names = {d["id"]: d["name"] for d in request.app.state.replay.datasets()}
+
+    def ratio(a, b):
+        return a / b if b else None
+
     rows = db.query(Feedback, Alert).join(Alert, Alert.id == Feedback.alert_id).all()
-    decisive = [(f, a) for f, a in rows if f.verdict != "unsure"]
+    decisive = [(f, a) for f, a in rows if f.verdict != "unsure" and a.hidden_label != UNLABELLED]
     analyst_right = sum(f.attack_class == a.hidden_label for f, a in decisive)
     model_right_on_same = sum(a.predicted_class == a.hidden_label for f, a in decisive)
-    review = db.query(Alert).filter(Alert.decision == "review").all()
+    review = db.query(Alert).filter(Alert.decision == "review", Alert.hidden_label != UNLABELLED).all()
     return {
         "note": "Uses hidden ground-truth labels. For evaluation only; never shown to analysts.",
-        "live_by_model_version": [
-            {"version": v, "flows": n, "accuracy": c / n if n else None,
-             "referral_rate": r / n if n else None, "missed_attacks": m}
-            for v, n, c, r, m in per_version],
+        "live": [
+            {"source": src, "source_name": names.get(src, src), "version": v, "flows": n,
+             "labelled_flows": nl, "accuracy": ratio(c, nl), "referral_rate": ratio(r, n),
+             "attacks": na, "detection_rate": ratio(nc, na), "missed_attacks": m,
+             "benign": nb, "false_alarm_rate": ratio(fa, nb)}
+            for src, v, n, nl, c, r, m, na, nc, nb, fa in per],
         "analyst_vs_truth": {
             "decisive_feedback": len(decisive),
-            "analyst_accuracy": analyst_right / len(decisive) if decisive else None,
-            "model_accuracy_on_same_alerts": model_right_on_same / len(decisive) if decisive else None,
+            "analyst_accuracy": ratio(analyst_right, len(decisive)),
+            "model_accuracy_on_same_alerts": ratio(model_right_on_same, len(decisive)),
         },
         "review_queue_model_accuracy":
-            sum(a.predicted_class == a.hidden_label for a in review) / len(review) if review else None,
+            ratio(sum(a.predicted_class == a.hidden_label for a in review), len(review)),
         "review_queue_size": len(review),
     }
+
+
+# ---------------- traffic sources (uploaded CSVs) ----------------
+MAX_UPLOAD_MB = 600
+
+
+@router.get("/datasets")
+def datasets(request: Request, admin: User = Depends(admin_only)):
+    r = request.app.state.replay
+    return {"current": r.source, "datasets": r.datasets(),
+            "max_upload_mb": MAX_UPLOAD_MB, "max_rows": request.app.state.cfg.get("import_max_rows", 300_000)}
+
+
+@router.post("/datasets")
+def upload_dataset(request: Request, file: UploadFile = File(...),
+                   admin: User = Depends(admin_only), db=Depends(get_db)):
+    """Upload a CICFlowMeter CSV; it is checked, mapped to our columns and saved as a
+    new traffic source for the replay. Large files are randomly sampled."""
+    if not (file.filename or "").lower().endswith(".csv"):
+        raise HTTPException(400, "Please upload a .csv file")
+    st = request.app.state
+    uploads = Path(st.replay.uploads_dir)
+    raw_dir = uploads / "raw"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    dest = raw_dir / f"{int(time.time())}_{Path(file.filename).name}"
+    with open(dest, "wb") as out:
+        shutil.copyfileobj(file.file, out, length=4 * 2**20)
+    if dest.stat().st_size > MAX_UPLOAD_MB * 2**20:
+        dest.unlink()
+        raise HTTPException(400, f"File is larger than {MAX_UPLOAD_MB} MB")
+    pre = st.models.detector.pre
+    try:
+        meta = import_flows(dest, pre.candidate_cols, st.cfg_label_map, uploads,
+                            name=Path(file.filename).stem,
+                            max_rows=st.cfg.get("import_max_rows", 300_000))
+    except ValueError as e:
+        dest.unlink(missing_ok=True)
+        raise HTTPException(400, str(e))
+    audit(db, admin.username, "dataset.upload", meta["id"], name=meta["name"],
+          rows=meta["rows_kept"], labelled=meta["labelled"],
+          features_found=f"{meta['features_found']}/{meta['features_total']}")
+    db.commit()
+    return meta
+
+
+@router.delete("/datasets/{ds_id}")
+def delete_dataset(ds_id: str, request: Request, admin: User = Depends(admin_only),
+                   db=Depends(get_db)):
+    r = request.app.state.replay
+    if ds_id == "test":
+        raise HTTPException(400, "The built-in test split cannot be deleted")
+    if ds_id == r.source:
+        raise HTTPException(400, "Switch the replay to another source before deleting this one")
+    uploads = Path(r.uploads_dir)
+    if not (uploads / f"{ds_id}.json").exists():
+        raise HTTPException(404, "Dataset not found")
+    for ext in (".json", ".parquet"):
+        (uploads / f"{ds_id}{ext}").unlink(missing_ok=True)
+    audit(db, admin.username, "dataset.delete", ds_id)
+    db.commit()
+    return {"ok": True}

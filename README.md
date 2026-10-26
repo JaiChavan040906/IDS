@@ -7,6 +7,7 @@ model through controlled, admin-approved retraining.
 
 Results and design decisions: [`docs/PROJECT_REPORT.md`](docs/PROJECT_REPORT.md).
 Demo walkthrough: [`docs/DEMO.md`](docs/DEMO.md).
+Data warehouse / OLAP tab (DWM Module 1): [`docs/WAREHOUSE.md`](docs/WAREHOUSE.md). Hidden by default; start with `start_portal_dwm.bat` to show it.
 
 ## Architecture
 

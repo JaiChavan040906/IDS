@@ -3,8 +3,10 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api, pct, PROTO, time } from '../../api'
 import { useAuth } from '../../auth'
 import { Badge, ErrorBox, Meter, useApi } from '../../components/ui'
+import { BarList, useVisual } from '../../components/charts'
 
 export default function AlertDetail() {
+  const visual = useVisual()
   const { id } = useParams()
   const { data: a, error, reload } = useApi(() => api(`/alerts/${id}`), [id])
   const meta = useApi(() => api('/meta'))
@@ -82,6 +84,13 @@ export default function AlertDetail() {
         <div className="card">
           <h3>What stands out</h3>
           <p className="faint small">Features furthest from typical training traffic (z-score after scaling).</p>
+          {visual && a.evidence.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <BarList signed title="Distance from typical traffic (σ); orange = below typical"
+                items={a.evidence.map((e) => ({ label: e.feature, value: e.z }))}
+                format={(v) => `${v > 0 ? '▲' : '▼'} ${Math.abs(v)}σ`} />
+            </div>
+          )}
           <table>
             <tbody>
               {a.evidence.map((e) => (

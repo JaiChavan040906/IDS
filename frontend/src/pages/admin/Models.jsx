@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { api, pct, time } from '../../api'
 import { Badge, ErrorBox, useApi } from '../../components/ui'
+import { BarList, SERIES, useVisual } from '../../components/charts'
 
 export default function Models() {
   const { data, error, reload } = useApi(() => api('/admin/models'), [], 5000)
@@ -13,6 +14,8 @@ export default function Models() {
     try { await api(path, { method: 'POST', body: { note } }); setMsg(`${label} done.`); reload() } catch (e) { setErr(e) }
   }
   const active = data?.find((m) => m.status === 'active')
+  const visual = useVisual()
+  const bench = (m) => m.metrics?.benchmark || {}
   return (
     <div className="stack">
       <ErrorBox error={error || err} />
@@ -53,6 +56,14 @@ export default function Models() {
           </tbody>
         </table>
       </div></div>
+      {visual && data?.length > 0 && (
+        <div className="card">
+          <BarList title="Benchmark macro-F1 (reliable classes) per model version" color={SERIES[0]} max={1}
+            items={data.map((m) => ({ label: `${m.version} (${m.status})`,
+              value: bench(m).benchmark_macro_f1_reliable ?? bench(m).macro_f1_reliable ?? 0 }))}
+            format={(v) => pct(v, 2)} />
+        </div>
+      )}
     </div>
   )
 }
