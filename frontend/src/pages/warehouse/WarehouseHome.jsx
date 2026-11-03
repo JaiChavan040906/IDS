@@ -18,7 +18,7 @@ export default function WarehouseHome() {
         <div>
           <h2 style={{ margin: 0 }}>Data warehouse</h2>
           <p className="muted" style={{ margin: 0 }}>
-            A separate analysis copy of the project's data: dimensional schemas, ETL and OLAP (DWM Module 1).
+            A separate analysis copy of the project's data: dimensional schemas, ETL and OLAP.
             It never feeds the detection model.
           </p>
         </div>
@@ -42,7 +42,7 @@ export default function WarehouseHome() {
         </div>
       )}
       <Routes>
-        <Route index element={<Overview data={ov.data} />} />
+        <Route index element={<Overview data={ov.data} isAdmin={user?.role === 'admin'} reload={ov.reload} />} />
         <Route path="schemas" element={<Schemas built={built} />} />
         <Route path="olap" element={<Olap built={built} />} />
       </Routes>

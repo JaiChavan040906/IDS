@@ -10,7 +10,7 @@ artifact_dir: artifacts/preprocessing
 split: {train: 0.70, val: 0.15, test: 0.15}
 
 # Never used as model features.
-#  - identifiers / shortcuts (CLAUDE.md data rules)
+#  - identifiers / shortcuts (project data rules)
 #  - "Attempted Category" is label metadata: it would leak the answer
 drop_columns: [id, Flow ID, Src IP, Src Port, Dst IP, Timestamp, Attempted Category]
 

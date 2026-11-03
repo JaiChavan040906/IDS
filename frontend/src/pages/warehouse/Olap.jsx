@@ -378,10 +378,20 @@ function CubeCard({ cubeRes, cubeErr, hasCols, depth, dims, used, fmt, onDepth }
 // ---------------------------------------------------------------- same result as a chart
 const tooltipStyle = { background: '#0e141d', border: '1px solid #2a3747', borderRadius: 10, fontSize: 12 }
 
+// column names that mean "no attack" (category, nature and class level of the attack dimension)
+const NORMAL = new Set(['Normal traffic', 'Benign', 'BENIGN'])
+
 function ResultChart({ res, fmt, measure, rowsLabel }) {
-  const cols = res.cols.length ? res.cols : ['value']
+  const allCols = res.cols.length ? res.cols : ['value']
+  // Normal traffic is ~100x larger than most attacks, so small attacks vanish in a linear stack.
+  // "Attacks only" drops it and draws side-by-side bars, each with a minimum height so none disappears.
+  const canSplit = res.additive && allCols.some((c) => NORMAL.has(c)) && allCols.some((c) => !NORMAL.has(c))
+  const [attacksOnly, setAttacksOnly] = useState(false)
+  const attacks = canSplit && attacksOnly
+  const cols = attacks ? allCols.filter((c) => !NORMAL.has(c)) : allCols
+  const colIdx = cols.map((c) => allCols.indexOf(c))
   // up to 8 series in the fixed palette order (7 + "Other" when there are more)
-  const ranked = cols.map((cname, j) => [cname, res.cells.reduce((s, r) => s + Math.abs(r[j] || 0), 0)])
+  const ranked = cols.map((cname, k) => [cname, res.cells.reduce((s, r) => s + Math.abs(r[colIdx[k]] || 0), 0)])
     .sort((a, b) => b[1] - a[1])
   const keep = new Set(ranked.slice(0, cols.length > 8 ? 7 : 8).map((x) => x[0]))
   const series = cols.filter((cname) => keep.has(cname))
@@ -389,19 +399,29 @@ function ResultChart({ res, fmt, measure, rowsLabel }) {
   const rows = res.rows.slice(0, 40)
   const data = rows.map((r, i) => {
     const o = { row: String(r).replace(/ 20\d\d/, '') }
-    cols.forEach((cname, j) => {
-      const v = res.cells[i][j] || 0
+    cols.forEach((cname, k) => {
+      const v = res.cells[i][colIdx[k]] || 0
       if (keep.has(cname)) o[cname] = v
       else if (hasOther) o.Other = (o.Other || 0) + v
     })
+    if (attacks) Object.keys(o).forEach((k) => { if (k !== 'row' && !o[k]) o[k] = null })   // no bar or label for 0
     return o
   })
-  const stacked = res.additive && cols.length > 1
+  const stacked = !attacks && res.additive && cols.length > 1
+  const tick = (v) => (Math.abs(v) >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : Math.abs(v) >= 1e3 ? `${Math.round(v / 1e3)}k` : v)
   return (
     <div className="card">
       <div className="card-head">
         <h3>The same result as a chart</h3>
-        <span className="faint small">{measure} by {rowsLabel}{stacked ? ', stacked by column' : ''}{res.rows.length > 40 ? ` · first 40 of ${res.rows.length} rows` : ''}</span>
+        <div className="row" style={{ gap: 10 }}>
+          <span className="faint small">{measure} by {rowsLabel}{stacked ? ', stacked by column' : ''}{attacks ? ', attacks only, side by side' : ''}{res.rows.length > 40 ? ` · first 40 of ${res.rows.length} rows` : ''}</span>
+          {canSplit && (
+            <div className="seg">
+              <button className={attacks ? '' : 'on'} onClick={() => setAttacksOnly(false)}>All traffic</button>
+              <button className={attacks ? 'on' : ''} onClick={() => setAttacksOnly(true)}>Attacks only</button>
+            </div>
+          )}
+        </div>
       </div>
       <div style={{ height: 320 }}>
         <ResponsiveContainer>
@@ -409,18 +429,28 @@ function ResultChart({ res, fmt, measure, rowsLabel }) {
             <CartesianGrid stroke="#1d2733" vertical={false} />
             <XAxis dataKey="row" stroke="#5d6a7b" fontSize={11} interval={0} angle={rows.length > 6 ? -25 : 0}
               textAnchor={rows.length > 6 ? 'end' : 'middle'} height={rows.length > 6 ? 70 : 30} />
-            <YAxis stroke="#5d6a7b" fontSize={11} width={70}
-              tickFormatter={(v) => (Math.abs(v) >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : Math.abs(v) >= 1e3 ? `${Math.round(v / 1e3)}k` : v)} />
+            <YAxis stroke="#5d6a7b" fontSize={11} width={70} tickFormatter={tick} />
             <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,.03)' }} formatter={(v) => fmt(v)} />
             {series.length > 1 && <Legend wrapperStyle={{ fontSize: 12 }} />}
             {series.map((cname, i) => (
               <Bar key={cname} dataKey={cname} name={cname === 'value' ? measure : cname} stackId={stacked ? 'a' : undefined}
-                fill={SERIES[i]} stroke="#0e141d" strokeWidth={stacked ? 2 : 0} radius={stacked ? 0 : [4, 4, 0, 0]} />
+                fill={SERIES[i]} stroke="#0e141d" strokeWidth={stacked ? 2 : 0} radius={stacked ? 0 : [4, 4, 0, 0]}
+                minPointSize={attacks ? 5 : 0} isAnimationActive={!attacks} />
             ))}
             {hasOther && <Bar dataKey="Other" stackId={stacked ? 'a' : undefined} fill={OTHER} stroke="#0e141d" strokeWidth={2} />}
           </BarChart>
         </ResponsiveContainer>
       </div>
+      {canSplit && !attacks && (
+        <p className="faint small" style={{ margin: '8px 0 0' }}>
+          Small attacks (a few thousand flows) are hidden by lakhs of normal flows on this scale; hover a bar for exact numbers or switch to <b>Attacks only</b>.
+        </p>
+      )}
+      {attacks && (
+        <p className="faint small" style={{ margin: '8px 0 0' }}>
+          Normal traffic removed; each attack type gets its own bar next to the others. Very small attacks (e.g. 11 Heartbleed flows) are drawn with a minimum height so they stay visible; hover a bar or read the table above for exact numbers.
+        </p>
+      )}
     </div>
   )
 }

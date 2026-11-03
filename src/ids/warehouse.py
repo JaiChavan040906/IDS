@@ -588,6 +588,27 @@ def full_load(wh_path: str, processed_dir: str, raw_dir: str, oltp_path: str, se
     return log.steps
 
 
+def _same_alerts(conn, oltp_path: str, wm: int) -> bool:
+    """True if the portal's alerts up to the watermark are the ones already loaded.
+
+    Counting is not enough: after a portal reset, new alerts reuse ids 1, 2, ... so the
+    count can match while the rows differ. Compare each alert's scores as a fingerprint.
+    """
+    if not Path(oltp_path).exists():
+        return wm == 0
+    src = sqlite3.connect(f"file:{Path(oltp_path).as_posix()}?mode=ro", uri=True)
+    try:
+        a = src.execute("SELECT id, ROUND(confidence, 6), ROUND(entropy, 6) FROM alerts "
+                        "WHERE id <= ? ORDER BY id", (wm,)).fetchall()
+    except sqlite3.Error:
+        a = []
+    finally:
+        src.close()
+    b = conn.execute("SELECT alert_key, ROUND(confidence, 6), ROUND(entropy, 6) FROM fact_alert "
+                     "WHERE alert_key <= ? ORDER BY alert_key", (wm,)).fetchall()
+    return a == b
+
+
 def incremental_load(wh_path: str, oltp_path: str, on_step=None):
     """Append only portal alerts newer than the last watermark; refresh reviews and marts."""
     log, started = EtlLog(on_step), utcnow()
@@ -602,7 +623,7 @@ def incremental_load(wh_path: str, oltp_path: str, on_step=None):
         # alerts with id <= watermark in the source must equal what we already loaded,
         # otherwise the portal was reset or rows were deleted -> reload the portal facts.
         src_old = src_n - len(probe["alerts"])
-        if src_max < wm or src_old != loaded:
+        if src_max < wm or src_old != loaded or not _same_alerts(conn, oltp_path, wm):
             conn.execute("DELETE FROM fact_alert")
             probe = extract_portal(oltp_path, alert_after=0)
             wm = 0

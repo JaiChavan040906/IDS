@@ -2,11 +2,12 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 import { api, num } from '../../api'
 import { BarList, SERIES, useVisual } from '../../components/charts'
 import { Stat, useApi } from '../../components/ui'
+import { EtlButtons } from './Etl'
 
 const tooltipStyle = { background: '#0e141d', border: '1px solid #2a3747', borderRadius: 10, fontSize: 12 }
 const olap = (body) => api('/dw/olap', { method: 'POST', body: { cube: 'flows', measure: 'flows', ...body } })
 
-export default function Overview({ data }) {
+export default function Overview({ data, isAdmin, reload }) {
   const visual = useVisual()
   const tables = data?.tables || []
   const rows = (n) => tables.find((t) => t.name === n)?.rows
@@ -57,6 +58,8 @@ export default function Overview({ data }) {
         </p>
       </div>
 
+      {built && <PortalSync data={data} isAdmin={isAdmin} reload={reload} />}
+
       {built && visual && (
         <div className="grid g2">
           <div className="card">
@@ -82,6 +85,37 @@ export default function Overview({ data }) {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+// Portal activity (replayed alerts, analyst reviews) reaches the warehouse only through an ETL load.
+function PortalSync({ data, isAdmin, reload }) {
+  const oltp = (n) => data.oltp_tables?.find((t) => t.name === n)?.rows ?? 0
+  const wh = (n) => data.tables?.find((t) => t.name === n)?.rows ?? 0
+  const last = data.runs?.[0]
+  const etl = data.etl
+  const behind = oltp('alerts') !== wh('fact_alert') || oltp('feedback') !== wh('fact_review')
+  return (
+    <div className="card">
+      <div className="card-head">
+        <h3>Portal activity: OLTP database vs warehouse</h3>
+        {behind ? <span className="badge review">new activity not loaded yet</span> : <span className="badge benign">up to date</span>}
+      </div>
+      <div className="grid g4">
+        <Stat label="Alerts in portal DB" value={num(oltp('alerts'))} sub="ids.db (OLTP), written live" />
+        <Stat label="Alerts in warehouse" value={num(wh('fact_alert'))} sub="fact_alert" />
+        <Stat label="Reviews in portal DB" value={num(oltp('feedback'))} sub="analyst decisions" />
+        <Stat label="Reviews in warehouse" value={num(wh('fact_review'))} sub="fact_review (factless)" />
+      </div>
+      <p className="muted small" style={{ margin: '14px 0 10px' }}>
+        Replay and analyst reviews change only the portal database. The warehouse is non-volatile and loaded in
+        batches: an incremental load copies alerts added after the last watermark and refreshes reviews and marts.
+        {last && <> Last load: <b>{last.mode}</b>, {new Date(last.finished_at || last.started_at).toLocaleString()} ({last.status}).</>}
+        {etl?.running && <> Running {etl.mode} load…</>}
+      </p>
+      {isAdmin ? <EtlButtons state={etl} onStart={reload} built />
+        : <p className="faint small" style={{ margin: 0 }}>Only an administrator runs ETL loads.</p>}
     </div>
   )
 }

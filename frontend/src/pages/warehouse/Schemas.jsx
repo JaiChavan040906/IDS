@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { api } from '../../api'
 import { ErrorBox, useApi } from '../../components/ui'
 import SchemaDiagram from './SchemaDiagram'
-import { Comparison, SampleTable } from './shared'
+import { SampleTable } from './shared'
 
 const SCHEMAS = {
   star: {
@@ -53,7 +53,6 @@ export default function Schemas({ built }) {
           selected={selected} onSelect={setSelected} />}
       </div>
       {built && selected && <SampleTable name={selected} />}
-      {built && which === 'snowflake' && <Comparison which="snowflake" />}
     </div>
   )
 }

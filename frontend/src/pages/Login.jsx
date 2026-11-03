@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth'
+import { useFeatures } from '../features'
 
 const DEMO = [
   ['analyst', 'analyst123', 'Security Analyst'],
@@ -9,6 +10,7 @@ const DEMO = [
 
 export default function Login() {
   const { user, login } = useAuth()
+  const { demoLogins } = useFeatures()
   const nav = useNavigate()
   const loc = useLocation()
   const [username, setUsername] = useState('')
@@ -47,7 +49,7 @@ export default function Login() {
         </label>
         {error && <div className="error">{error}</div>}
         <button className="btn primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
-        <div>
+        {demoLogins && <div>
           <p className="faint small" style={{ margin: '4px 0 0' }}>Demo accounts (simulated login): click to fill</p>
           <div className="demo-accounts">
             {DEMO.map(([u, p, r]) => (
@@ -56,7 +58,7 @@ export default function Login() {
               </button>
             ))}
           </div>
-        </div>
+        </div>}
       </form>
     </div>
   )

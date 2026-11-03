@@ -35,7 +35,7 @@ The WAREHOUSE tab is **off by default**, for the practicals that don't cover DWM
 About (traffic handled automatically vs by the analyst), Analyst dashboard (where scored flows went, open items by
 severity), alert detail (z-score bars for "What stands out"), Admin Evaluation (attacks caught and referral rate per
 source), Models (macro-F1 per version), Retraining (base vs candidate), Warehouse Overview (flows per day, attack
-flows by category), Schemas (star vs snowflake query time) and the OLAP cube (3-D cube + chart of the result).
+flows by category) and the OLAP cube (3-D cube + chart of the result).
 With the switch Off none of these appear.
 
 Nothing is deleted when it is hidden. `warehouse.db` and the audit rows stay, so switching back needs no rebuild.
@@ -47,7 +47,7 @@ The default can also be set with `warehouse_enabled` in `configs/app.yaml`; `IDS
 |---|---|---|
 | Introduction to DW, DW architecture | Overview | Sources → ETL/staging → warehouse → marts → OLAP diagram |
 | Star schema | Schemas → Star | `fact_flow` + `dim_time`, `dim_attack`, `dim_service`, `dim_protocol`, `dim_split` |
-| Snowflake schema | Schemas → Snowflake | `dim_attack_sf → dim_category`, `dim_time_sf → dim_date`; timed vs star |
+| Snowflake schema | Schemas → Snowflake | `dim_attack_sf → dim_category`, `dim_time_sf → dim_date` |
 | Fact constellation | Schemas → Fact constellation | `fact_alert` + `fact_review` share time, attack, model |
 | Data cube | OLAP cube → The cube | A real 3-D cube: X = columns, Y = rows, Z = depth; one block per cell, colour = value |
 | OLAP operations | OLAP cube | Roll-up, drill-down, slice, dice and pivot buttons; the 3-D cube changes with each (slice/dice light up their part), plus a chart of the result |
@@ -56,8 +56,8 @@ The default can also be set with `warehouse_enabled` in `configs/app.yaml`; `IDS
 ## Five-minute demo for the professor
 
 1. **Overview**: the architecture diagram, then the two charts (flows per day, attack flows by category).
-2. **Schemas → Star**: click `fact_flow` to show real rows. Switch to Snowflake and press **Run both queries**:
-   same answer, the snowflake needs more joins.
+2. **Schemas → Star**: click `fact_flow` to show real rows. Switch to Snowflake:
+   the same facts with normalised dimensions, so a query needs more joins.
 3. **OLAP cube**: press the example buttons in order: start → drill-down → roll-up →
    slice → dice → pivot. Point at "Operations applied".
    Click a day name to drill into it. Watch **The cube** change with every step: drill-down adds blocks,

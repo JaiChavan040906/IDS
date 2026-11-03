@@ -28,12 +28,19 @@ APP_CONFIG = os.environ.get("IDS_APP_CONFIG", "configs/app.yaml")
 FRONTEND = Path("frontend/dist")
 
 
+def custom_passwords() -> bool:
+    """A public deployment sets its own passwords (IDS_ADMIN_PASSWORD / IDS_ANALYST_PASSWORD)."""
+    return bool(os.environ.get("IDS_ADMIN_PASSWORD") or os.environ.get("IDS_ANALYST_PASSWORD"))
+
+
 def bootstrap(db, cfg):
-    """First start: demo users + register the initial bundle as the active model."""
+    """First start: demo users + register the initial bundle as the active model.
+    IDS_ADMIN_PASSWORD / IDS_ANALYST_PASSWORD, when set, replace the demo passwords."""
     for u in cfg["demo_users"]:
         if not db.query(User).filter_by(username=u["username"]).count():
+            password = os.environ.get(f"IDS_{u['role'].upper()}_PASSWORD") or u["password"]
             db.add(User(username=u["username"], full_name=u["full_name"], role=u["role"],
-                        password_hash=hash_password(u["password"])))
+                        password_hash=hash_password(password)))
     if not db.query(ModelVersion).count():
         path = Path(cfg["bundle_dir"]) / cfg["initial_bundle"]
         manifest = json.loads((path / "manifest.json").read_text())
@@ -86,7 +93,8 @@ app.include_router(warehouse.router)
 @app.get("/api/health")
 def health():
     return {"ok": True, "model": app.state.models.version,
-            "features": {"warehouse": app.state.warehouse_enabled}}
+            "features": {"warehouse": app.state.warehouse_enabled,
+                         "demo_logins": not custom_passwords()}}
 
 
 @app.get("/api/public/summary")

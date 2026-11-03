@@ -1,7 +1,7 @@
 """Presentation helper: fill the system with demo analyst decisions in one click, so the
 retraining threshold can be shown live without reviewing 20 alerts by hand.
 
-Honesty rules (CLAUDE.md: the hidden label is never used to fill an analyst decision):
+Honesty rules (project rule: the hidden label is never used to fill an analyst decision):
   * a demo decision only ACCEPTS THE MODEL'S OWN PREDICTION (benign if the model said
     BENIGN, otherwise malicious with the predicted class); it never reads hidden_label
   * every demo decision is marked: analyst "demo", tag "demo", and a reason that says so
